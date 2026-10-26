@@ -6,7 +6,7 @@ IDs (R, O, T, M) are stable: never renumber, never reuse. A removed requirement 
 Brief: CHALLENGE.md (read-only). Research: docs/research.md.
 -->
 
-GitHub Project: {{PROJECT_URL}} (number {{PROJECT_NUMBER}})
+GitHub Project: https://github.com/users/michaelwayman/projects/4 (number 4)
 
 ## Requirements
 
