@@ -7,7 +7,7 @@ dev = [
     "ruff==0.17.2",
     # djangorestframework-stubs 3.18.1 requires mypy<2.4 (its compatible-mypy extra).
     "mypy>=2.3,<2.4",
-    "django-stubs[compatible-mypy]>=6.1,<7",
+    "django-stubs[compatible-mypy]>=6.1.2,<7",
     "djangorestframework-stubs[compatible-mypy]>=3.18,<4",
     "pytest>=9.1,<10",
     "pytest-django>=4.14,<5",
