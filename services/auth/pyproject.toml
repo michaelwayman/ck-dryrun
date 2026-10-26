@@ -1,0 +1,33 @@
+[project]
+name = "auth"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "Django>=5.2,<5.3",
+    "django-environ>=0.14,<1",
+    "tokenauth>=1,<2",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+tokenauth = { workspace = true }
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+check_untyped_defs = true
+files = ["config", "tests"]
+
+# django-environ ships no type hints.
+[[tool.mypy.overrides]]
+module = ["environ"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+django_find_project = false

@@ -1,0 +1,26 @@
+# Virtual workspace root: no package of its own, one shared uv.lock for every member.
+[tool.uv.workspace]
+members = ["services/*", "libs/*"]
+
+[dependency-groups]
+dev = [
+    "ruff==0.17.2",
+    # djangorestframework-stubs 3.18.1 requires mypy<2.4 (its compatible-mypy extra).
+    "mypy>=2.3,<2.4",
+    "django-stubs[compatible-mypy]>=6.1,<7",
+    "djangorestframework-stubs[compatible-mypy]>=3.18,<4",
+    "pytest>=9.1,<10",
+    "pytest-django>=4.14,<5",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+extend-exclude = ["wp-content", "db", "reference", "node_modules", "dist", "static", "migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ", "S", "C4", "SIM", "DTZ"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101"]
+"**/conftest.py" = ["S101"]
