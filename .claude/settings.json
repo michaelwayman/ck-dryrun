@@ -1,0 +1,51 @@
+{
+  "extraKnownMarketplaces": {
+    "challenge-kit": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/michaelwayman/Projects/challenge-kit"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "challenge-kit@challenge-kit": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(make test *)",
+      "Bash(make lint *)",
+      "Bash(make typecheck *)",
+      "Bash(make check *)",
+      "Bash(make check)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr checks *)",
+      "Bash(ck-github items *)",
+      "mcp__ccd_pr__get_status",
+      "mcp__ccd_pr__bind_pr",
+      "mcp__ccd_pr__set_monitor"
+    ],
+    "ask": [
+      "Edit(/SPEC.md)",
+      "Write(/SPEC.md)",
+      "Edit(/docs/contracts/**)",
+      "Write(/docs/contracts/**)",
+      "Edit(/.claude/**)",
+      "Edit(/.github/workflows/**)",
+      "Bash(* --no-verify*)",
+      "Bash(git push *main*)",
+      "Bash(gh pr merge *)"
+    ],
+    "deny": [
+      "Edit(/CHALLENGE.md)",
+      "Write(/CHALLENGE.md)"
+    ]
+  }
+}

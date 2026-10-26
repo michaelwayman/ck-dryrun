@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/token/logout/",
+    "body": {
+      "refresh": "<opaque refresh token B>"
+    }
+  },
+  "response": {
+    "status": 204
+  }
+}

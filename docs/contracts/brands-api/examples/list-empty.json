@@ -1,0 +1,21 @@
+{
+  "_note": "Assumes every Retail brand has been deactivated by a re-import; a valid filter can match nothing.",
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {
+      "industry": [
+        "retail"
+      ]
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "count": 0,
+      "next": null,
+      "previous": null,
+      "results": []
+    }
+  }
+}

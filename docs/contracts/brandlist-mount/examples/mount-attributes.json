@@ -1,0 +1,28 @@
+{
+  "id": "brand-list",
+  "data-api-url": "/api/brands/",
+  "data-industries": [
+    {
+      "slug": "finance",
+      "name": "Finance"
+    },
+    {
+      "slug": "home-services",
+      "name": "Home Services"
+    },
+    {
+      "slug": "insurance",
+      "name": "Insurance"
+    },
+    {
+      "slug": "retail",
+      "name": "Retail"
+    },
+    {
+      "slug": "telecom",
+      "name": "Telecom"
+    }
+  ],
+  "data-page-size": "12",
+  "data-default-ordering": "-average_rating"
+}

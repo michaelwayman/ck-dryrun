@@ -1,0 +1,22 @@
+{
+  "access-token/examples/expired.json": {
+    "raises": "ExpiredToken",
+    "code": "expired"
+  },
+  "access-token/examples/wrong-audience.json": {
+    "raises": "InvalidAudience",
+    "code": "invalid_audience"
+  },
+  "access-token/examples/alg-none.json": {
+    "raises": "InvalidAlgorithm",
+    "code": "invalid_algorithm"
+  },
+  "access-token/examples/unknown-kid.json": {
+    "raises": "UnknownKey",
+    "code": "unknown_key"
+  },
+  "access-token/examples/unsupported-version.json": {
+    "raises": "UnsupportedVersion",
+    "code": "unsupported_version"
+  }
+}

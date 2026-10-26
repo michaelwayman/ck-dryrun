@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/token/refresh/",
+    "body": {
+      "refresh": "<opaque refresh token A, already rotated or logged out>"
+    }
+  },
+  "response": {
+    "status": 401,
+    "body": {
+      "error": {
+        "code": "invalid_refresh",
+        "message": "Refresh token is invalid, expired or revoked.",
+        "fields": null
+      }
+    }
+  }
+}

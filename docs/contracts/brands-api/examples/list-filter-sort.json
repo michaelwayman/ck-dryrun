@@ -1,0 +1,44 @@
+{
+  "_note": "Values computed from db/dump.sql (review means rounded half-up to 1 dp; top review = highest rating, then newest). Equal review_count ties break by name.",
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {
+      "industry": [
+        "insurance",
+        "telecom"
+      ],
+      "ordering": "-review_count",
+      "page_size": "1"
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "count": 2,
+      "next": "http://localhost:8000/api/brands/?industry=insurance&industry=telecom&ordering=-review_count&page=2&page_size=1",
+      "previous": null,
+      "results": [
+        {
+          "name": "Acme Insurance Co.",
+          "slug": "acme-insurance",
+          "url": "/brand/acme-insurance/",
+          "industry": {
+            "slug": "insurance",
+            "name": "Insurance"
+          },
+          "short_description": "Acme Insurance is a long-running general-lines insurer offering auto, home, and umbrella coverage across 38 US states. The company was founded in Hartford, Connecticut in 1985 and operates through a network of approximately 1,200 independent agents.",
+          "average_rating": 3.9,
+          "review_count": 12,
+          "top_review": {
+            "title": "Umbrella policy was easy to add",
+            "slug": "umbrella-policy-was-easy-to-add",
+            "url": "/review/umbrella-policy-was-easy-to-add/",
+            "rating": 5,
+            "snippet": "Added a $1M umbrella policy. The process was completely painless — about 15 minutes on a phone call with my agent, paperwork…"
+          }
+        }
+      ]
+    }
+  }
+}

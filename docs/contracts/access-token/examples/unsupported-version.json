@@ -1,0 +1,21 @@
+{
+  "verify_at": 1793000060,
+  "header": {
+    "alg": "EdDSA",
+    "typ": "JWT",
+    "kid": "test-2026-10"
+  },
+  "payload": {
+    "iss": "brand-reviews-auth",
+    "aud": "brand-reviews-app",
+    "sub": "1",
+    "username": "admin",
+    "roles": [
+      "editor"
+    ],
+    "v": 2,
+    "iat": 1793000000,
+    "exp": 1793000600
+  },
+  "expect": "unsupported_version"
+}

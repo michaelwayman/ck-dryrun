@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "PATCH",
+    "path": "/api/brands/acme-insurance/",
+    "headers": {
+      "Authorization": "Bearer <access token from access-token/examples/expired.json>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "short_description": "x"
+    }
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "WWW-Authenticate": "Bearer error=\"invalid_token\""
+    },
+    "body": {
+      "error": {
+        "code": "invalid_token",
+        "message": "Token has expired.",
+        "fields": null
+      }
+    }
+  }
+}

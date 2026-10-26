@@ -1,0 +1,36 @@
+{
+  "source": {
+    "wp_users": {
+      "ID": 2,
+      "user_login": "sarah_k",
+      "user_email": "sarah@example.com",
+      "display_name": "Sarah K.",
+      "user_pass": "$wp$2y$10$<60-char bcrypt>"
+    },
+    "wp_usermeta": {
+      "wp_capabilities": "a:1:{s:10:\"subscriber\";b:1;}"
+    }
+  },
+  "target": {
+    "User": {
+      "wp_user_id": 2,
+      "username": "sarah_k",
+      "email": "sarah@example.com",
+      "display_name": "Sarah K.",
+      "password": "wp_bcrypt$<stored WP hash>",
+      "roles": [
+        "reader"
+      ],
+      "is_staff": false,
+      "is_superuser": false
+    }
+  },
+  "admin_variant": {
+    "wp_capabilities": "a:1:{s:13:\"administrator\";b:1;}",
+    "roles": [
+      "editor"
+    ],
+    "is_staff": true,
+    "is_superuser": true
+  }
+}

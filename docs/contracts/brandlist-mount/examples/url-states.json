@@ -1,0 +1,20 @@
+[
+  {
+    "page_url": "/brand/",
+    "api_request": "/api/brands/?ordering=-average_rating&page_size=12"
+  },
+  {
+    "page_url": "/brand/?industry=telecom&industry=insurance",
+    "normalised_page_url": "/brand/?industry=insurance&industry=telecom",
+    "api_request": "/api/brands/?industry=insurance&industry=telecom&ordering=-average_rating&page_size=12"
+  },
+  {
+    "page_url": "/brand/?ordering=-review_count&page=2",
+    "api_request": "/api/brands/?ordering=-review_count&page=2&page_size=12"
+  },
+  {
+    "page_url": "/brand/?ordering=-average_rating&page=1",
+    "normalised_page_url": "/brand/",
+    "api_request": "/api/brands/?ordering=-average_rating&page_size=12"
+  }
+]

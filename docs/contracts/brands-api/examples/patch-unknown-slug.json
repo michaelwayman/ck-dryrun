@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "PATCH",
+    "path": "/api/brands/no-such-brand/",
+    "headers": {
+      "Authorization": "Bearer <access token from access-token/examples/editor.json>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "short_description": "x"
+    }
+  },
+  "response": {
+    "status": 404,
+    "body": {
+      "error": {
+        "code": "not_found",
+        "message": "Brand not found.",
+        "fields": null
+      }
+    }
+  }
+}

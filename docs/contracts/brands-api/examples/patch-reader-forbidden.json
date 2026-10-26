@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "PATCH",
+    "path": "/api/brands/acme-insurance/",
+    "headers": {
+      "Authorization": "Bearer <access token from access-token/examples/reader.json>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "short_description": "x"
+    }
+  },
+  "response": {
+    "status": 403,
+    "body": {
+      "error": {
+        "code": "permission_denied",
+        "message": "Requires role: editor.",
+        "fields": null
+      }
+    }
+  }
+}

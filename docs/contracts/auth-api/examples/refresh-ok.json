@@ -1,0 +1,22 @@
+{
+  "_note": "Token A is revoked by this call (rotation); roles are re-read from auth-db.",
+  "request": {
+    "method": "POST",
+    "path": "/api/token/refresh/",
+    "body": {
+      "refresh": "<opaque refresh token A>"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Cache-Control": "no-store"
+    },
+    "body": {
+      "access": "<JWT, see access-token/examples/editor.json>",
+      "refresh": "<opaque refresh token B>",
+      "token_type": "Bearer",
+      "expires_in": 600
+    }
+  }
+}

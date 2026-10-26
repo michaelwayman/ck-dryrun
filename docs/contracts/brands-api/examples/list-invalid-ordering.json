@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {
+      "ordering": "founded_year"
+    }
+  },
+  "response": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": "invalid_parameter",
+        "message": "Invalid query parameter.",
+        "fields": {
+          "ordering": [
+            "Must be one of: average_rating, -average_rating, review_count, -review_count, name, -name."
+          ]
+        }
+      }
+    }
+  }
+}

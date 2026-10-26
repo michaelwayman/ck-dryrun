@@ -1,0 +1,13 @@
+{
+  "from": "access-token/examples/editor.json",
+  "claims": {
+    "sub": "1",
+    "username": "admin",
+    "roles": [
+      "editor"
+    ],
+    "issued_at": "2026-10-26T07:33:20Z",
+    "expires_at": "2026-10-26T07:43:20Z",
+    "version": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {
+      "page": "9"
+    }
+  },
+  "response": {
+    "status": 404,
+    "body": {
+      "error": {
+        "code": "not_found",
+        "message": "Page out of range.",
+        "fields": null
+      }
+    }
+  }
+}
