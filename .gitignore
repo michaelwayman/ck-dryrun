@@ -8,3 +8,20 @@ wp-content/uploads/wp-personal-data-exports/
 
 # Interviewer-only material — never shipped to candidates.
 interviewer/
+
+# Local Claude Code settings (per machine)
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+staticfiles/
+
+# Node / frontend build
+node_modules/
+frontend/dist/
