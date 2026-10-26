@@ -1,0 +1,56 @@
+version: 2
+
+# Weekly, with minor and patch updates grouped per ecosystem into one PR. Majors held back below
+# are pinned on purpose; each ignore names the reason, which lives next to the pin.
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # pyproject.toml: djangorestframework-stubs 3.18 requires mypy<2.4.
+      - dependency-name: mypy
+        update-types: [version-update:semver-major, version-update:semver-minor]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # frontend/package.json "//": typescript-eslint 8.72 peers typescript <6.1.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      # eslint-plugin-jsx-a11y 6.10.2 peers eslint up to ^9.
+      - dependency-name: eslint
+        update-types: [version-update:semver-major]
+      - dependency-name: "@eslint/js"
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: docker
+    directories: [/services/app, /services/auth]
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # node:26 and python:3.14 match .nvmrc, .python-version and the engines/requires-python
+      # ranges; moving them is a deliberate change, not a weekly bump.
+      - dependency-name: node
+        update-types: [version-update:semver-major]
+      - dependency-name: python
+        update-types: [version-update:semver-major, version-update:semver-minor]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
