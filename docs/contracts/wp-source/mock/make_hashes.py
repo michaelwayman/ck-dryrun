@@ -5,6 +5,7 @@
 
 Scheme (wp-includes/pluggable.php, wp_hash_password):
     "$wp" + bcrypt(base64(HMAC-SHA384(key="wp-sha384", trim(password))))
+Checked against wordpress:6.9 wp-includes/pluggable.php:2809.
 PHP writes bcrypt as "$2y$"; Python's bcrypt writes "$2b$". Same algorithm.
 """
 

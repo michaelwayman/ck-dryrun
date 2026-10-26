@@ -68,14 +68,16 @@ CREATE TABLE `wp_usermeta` (
   PRIMARY KEY (`umeta_id`)
 );
 
--- Industries. Slugs deliberately differ from the slugified names.
+-- Industries (terms 1-2) and one non-industry term (3) the importer must ignore. Slugs deliberately differ from the slugified names.
 -- term_taxonomy_id differs from term_id so a wrong join shows up.
 INSERT INTO `wp_terms` (`term_id`, `name`, `slug`) VALUES
   (1, 'Mock Insurance', 'ins-mock'),
-  (2, 'Mock Banking', 'bank-mock');
+  (2, 'Mock Banking', 'bank-mock'),
+  (3, 'Mock Category', 'mock-category');
 INSERT INTO `wp_term_taxonomy` (`term_taxonomy_id`, `term_id`, `taxonomy`) VALUES
   (11, 1, 'industry'),
-  (12, 2, 'industry');
+  (12, 2, 'industry'),
+  (13, 3, 'category');
 
 -- Brands: 101 A (publish), 102 B (publish), 103 D (draft, never imported).
 -- Reviews: 201 R1 (valid), 202 R2 (brand 9999 missing), 203 R3 (rating 7).
@@ -89,6 +91,7 @@ INSERT INTO `wp_posts` (`ID`, `post_author`, `post_date_gmt`, `post_content`, `p
 
 INSERT INTO `wp_term_relationships` (`object_id`, `term_taxonomy_id`) VALUES
   (101, 11),
+  (101, 13),
   (102, 12),
   (103, 11);
 

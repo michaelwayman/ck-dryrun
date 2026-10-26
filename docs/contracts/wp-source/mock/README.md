@@ -36,6 +36,7 @@ uv run --no-project --with bcrypt python docs/contracts/wp-source/mock/make_hash
 |---|---|---|
 | term 1 / tt 11 | industry "Mock Insurance", slug `ins-mock` | slug copied verbatim; join on `term_id`, not `term_taxonomy_id` |
 | term 2 / tt 12 | industry "Mock Banking", slug `bank-mock` | same |
+| term 3 / tt 13 | `category` term attached to brand 101 | not an industry; ignored |
 | post 101 (A) | brand, publish, industry 1, every data meta key, both Yoast keys, `_website_url` ACF twin | full mapping; `_` keys ignored; first `<p>` only, tags stripped |
 | post 102 (B) | brand, publish, industry 2, empty `website_url`, `founded_year`, `average_rating`; `&amp;` in content | empty → `""` / null; no Yoast meta → empty SEO fields |
 | post 103 (D) | brand, **draft**, industry 1 | not imported |
@@ -65,7 +66,7 @@ plus one log line each for review 202 (unknown brand `9999`) and review 203 (rat
 | Brand | 102 | name `Beta & Sons`, slug `beta-and-sons`, industry 2, short_description is the first `<p>` tag-stripped (`Beta &amp; Sons is a synthetic bank.`; the contract doesn't say whether entities are decoded), website_url `""`, founded_year null, headquarters `Shelbyville, ZZ`, legacy_average_rating null, seo_title `""`, seo_description `""` |
 | Review | 201 | brand 101, title `Quick claim`, slug `quick-claim`, rating `4`, reviewer_wp_id `2`, reviewer_name `Mock Reader`, reviewer_location `Springfield, ZZ`, published_at `2026-02-01T12:30:00Z` |
 
-All rows `is_active = True`. `import_wp_users` creates 2 users:
+`content` on each Brand and Review is its raw `post_content` from `fixture.sql`. All rows `is_active = True`. `import_wp_users` creates 2 users:
 
 | `wp_user_id` | username | email | display_name | roles | is_staff | is_superuser |
 |---|---|---|---|---|---|---|
