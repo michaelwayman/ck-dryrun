@@ -1,0 +1,23 @@
+# Both Python images build from the repo root (the uv workspace lock lives there), so this is an
+# allowlist: everything is excluded, then only what the images need is let back in. That keeps
+# .git, wp-content, db, reference, docs, scripts (except dev-keys.sh) and every .env out of the
+# context.
+*
+!pyproject.toml
+!uv.lock
+!libs/
+!services/
+!frontend/
+!scripts/dev-keys.sh
+
+# Local build output, environments and caches inside the allowed directories.
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.mypy_cache
+**/.ruff_cache
+**/.pytest_cache
+**/staticfiles
+**/.DS_Store
+frontend/dist
