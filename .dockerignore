@@ -1,6 +1,7 @@
 # Both Python images build from the repo root (the uv workspace lock lives there), so this is an
 # allowlist: everything is excluded, then only what the images need is let back in. That keeps
-# .git, wp-content, db, reference, docs, scripts and every .env out of the context.
+# .git, wp-content, db, reference, docs, scripts (except dev-keys.sh) and every .env out of the
+# context.
 *
 !pyproject.toml
 !uv.lock
