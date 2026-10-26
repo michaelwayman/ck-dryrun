@@ -1,0 +1,34 @@
+{
+  "source": {
+    "wp_posts": {
+      "ID": 12,
+      "post_author": 2,
+      "post_type": "review",
+      "post_status": "publish",
+      "post_date_gmt": "2026-05-19 20:29:13",
+      "post_title": "Smooth auto claim after a parking-lot fender bender",
+      "post_name": "smooth-auto-claim-after-a-parking-lot-fender-bender",
+      "post_content": "<p>Got rear-ended in a grocery store parking lot last March. … No complaints.</p>"
+    },
+    "wp_postmeta": {
+      "rating": "5",
+      "reviewer_name": "Sarah K.",
+      "reviewer_location": "Denver, CO",
+      "brand": "7"
+    }
+  },
+  "target": {
+    "Review": {
+      "wp_id": 12,
+      "brand": "acme-insurance (wp_id 7)",
+      "title": "Smooth auto claim after a parking-lot fender bender",
+      "slug": "smooth-auto-claim-after-a-parking-lot-fender-bender",
+      "rating": 5,
+      "reviewer_wp_id": 2,
+      "reviewer_name": "Sarah K.",
+      "reviewer_location": "Denver, CO",
+      "published_at": "2026-05-19T20:29:13Z",
+      "is_active": true
+    }
+  }
+}

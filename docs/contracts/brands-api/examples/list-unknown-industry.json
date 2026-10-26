@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {
+      "industry": [
+        "pets"
+      ]
+    }
+  },
+  "response": {
+    "status": 400,
+    "body": {
+      "error": {
+        "code": "invalid_parameter",
+        "message": "Invalid query parameter.",
+        "fields": {
+          "industry": [
+            "Unknown industry: pets."
+          ]
+        }
+      }
+    }
+  }
+}

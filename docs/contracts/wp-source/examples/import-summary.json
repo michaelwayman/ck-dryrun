@@ -1,0 +1,45 @@
+{
+  "first_run": {
+    "industries": {
+      "created": 5,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "brands": {
+      "created": 5,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "reviews": {
+      "created": 60,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "users": {
+      "created": 9,
+      "updated": 0
+    }
+  },
+  "re_run": {
+    "industries": {
+      "created": 0,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "brands": {
+      "created": 0,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "reviews": {
+      "created": 0,
+      "updated": 0,
+      "deactivated": 0
+    },
+    "users": {
+      "created": 0,
+      "updated": 0
+    }
+  },
+  "_note": "'updated' counts rows whose fields actually changed; an unchanged re-run reports 0."
+}

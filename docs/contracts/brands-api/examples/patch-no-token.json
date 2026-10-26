@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "PATCH",
+    "path": "/api/brands/acme-insurance/",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "short_description": "x"
+    }
+  },
+  "response": {
+    "status": 401,
+    "headers": {
+      "WWW-Authenticate": "Bearer"
+    },
+    "body": {
+      "error": {
+        "code": "not_authenticated",
+        "message": "Authentication credentials were not provided.",
+        "fields": null
+      }
+    }
+  }
+}

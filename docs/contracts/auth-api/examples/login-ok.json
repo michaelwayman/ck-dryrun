@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/token/",
+    "body": {
+      "username": "admin",
+      "password": "admin"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Cache-Control": "no-store"
+    },
+    "body": {
+      "access": "<JWT, see access-token/examples/editor.json>",
+      "refresh": "<opaque refresh token A>",
+      "token_type": "Bearer",
+      "expires_in": 600
+    }
+  }
+}

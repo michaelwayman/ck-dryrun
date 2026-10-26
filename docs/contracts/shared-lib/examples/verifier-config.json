@@ -1,0 +1,8 @@
+{
+  "public_keys": {
+    "test-2026-10": "-----BEGIN PUBLIC KEY-----\n<Ed25519 test public key from M1 fixture>\n-----END PUBLIC KEY-----\n"
+  },
+  "issuer": "brand-reviews-auth",
+  "audience": "brand-reviews-app",
+  "leeway_seconds": 30
+}

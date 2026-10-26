@@ -1,0 +1,40 @@
+{
+  "source": {
+    "wp_posts": {
+      "ID": 7,
+      "post_type": "brand",
+      "post_status": "publish",
+      "post_title": "Acme Insurance Co.",
+      "post_name": "acme-insurance",
+      "post_content": "<p>Acme Insurance is a long-running general-lines insurer … independent agents.</p><p>…</p>"
+    },
+    "wp_postmeta": {
+      "website_url": "https://acme-insurance.example.com",
+      "founded_year": "1985",
+      "headquarters": "Hartford, CT",
+      "average_rating": "4.2",
+      "_yoast_wpseo_title": "Acme Insurance Reviews - Auto, Home & Umbrella Coverage",
+      "_yoast_wpseo_metadesc": "Read 12 independent customer reviews of Acme Insurance, a Hartford-based insurer offering auto, home, and umbrella policies in 38 US states."
+    },
+    "industry_term": {
+      "term_id": 2,
+      "slug": "insurance"
+    }
+  },
+  "target": {
+    "Brand": {
+      "wp_id": 7,
+      "name": "Acme Insurance Co.",
+      "slug": "acme-insurance",
+      "industry": "insurance (wp_id 2)",
+      "short_description": "Acme Insurance is a long-running general-lines insurer offering auto, home, and umbrella coverage across 38 US states. The company was founded in Hartford, Connecticut in 1985 and operates through a network of approximately 1,200 independent agents.",
+      "website_url": "https://acme-insurance.example.com",
+      "founded_year": 1985,
+      "headquarters": "Hartford, CT",
+      "legacy_average_rating": "4.2",
+      "seo_title": "Acme Insurance Reviews - Auto, Home & Umbrella Coverage",
+      "seo_description": "Read 12 independent customer reviews of Acme Insurance, a Hartford-based insurer offering auto, home, and umbrella policies in 38 US states.",
+      "is_active": true
+    }
+  }
+}

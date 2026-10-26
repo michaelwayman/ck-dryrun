@@ -1,0 +1,35 @@
+{
+  "request": {
+    "method": "PATCH",
+    "path": "/api/brands/acme-insurance/",
+    "headers": {
+      "Authorization": "Bearer <access token from access-token/examples/editor.json>",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "short_description": "Hartford-based insurer for auto, home and umbrella coverage in 38 states."
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "name": "Acme Insurance Co.",
+      "slug": "acme-insurance",
+      "url": "/brand/acme-insurance/",
+      "industry": {
+        "slug": "insurance",
+        "name": "Insurance"
+      },
+      "short_description": "Hartford-based insurer for auto, home and umbrella coverage in 38 states.",
+      "average_rating": 3.9,
+      "review_count": 12,
+      "top_review": {
+        "title": "Umbrella policy was easy to add",
+        "slug": "umbrella-policy-was-easy-to-add",
+        "url": "/review/umbrella-policy-was-easy-to-add/",
+        "rating": 5,
+        "snippet": "Added a $1M umbrella policy. The process was completely painless — about 15 minutes on a phone call with my agent, paperwork…"
+      }
+    }
+  }
+}

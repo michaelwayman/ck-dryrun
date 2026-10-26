@@ -1,0 +1,113 @@
+{
+  "_note": "Values computed from db/dump.sql (review means rounded half-up to 1 dp; top review = highest rating, then newest).",
+  "request": {
+    "method": "GET",
+    "path": "/api/brands/",
+    "query": {}
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "count": 5,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "name": "Acme Insurance Co.",
+          "slug": "acme-insurance",
+          "url": "/brand/acme-insurance/",
+          "industry": {
+            "slug": "insurance",
+            "name": "Insurance"
+          },
+          "short_description": "Acme Insurance is a long-running general-lines insurer offering auto, home, and umbrella coverage across 38 US states. The company was founded in Hartford, Connecticut in 1985 and operates through a network of approximately 1,200 independent agents.",
+          "average_rating": 3.9,
+          "review_count": 12,
+          "top_review": {
+            "title": "Umbrella policy was easy to add",
+            "slug": "umbrella-policy-was-easy-to-add",
+            "url": "/review/umbrella-policy-was-easy-to-add/",
+            "rating": 5,
+            "snippet": "Added a $1M umbrella policy. The process was completely painless — about 15 minutes on a phone call with my agent, paperwork…"
+          }
+        },
+        {
+          "name": "PrimePath Bank",
+          "slug": "primepath-bank",
+          "url": "/brand/primepath-bank/",
+          "industry": {
+            "slug": "finance",
+            "name": "Finance"
+          },
+          "short_description": "PrimePath Bank is a regional retail bank operating 220 branches across the Northeast United States. Founded in 1978 and headquartered in New York City, PrimePath offers personal checking, savings, mortgages, auto loans, and small-business banking.",
+          "average_rating": 3.8,
+          "review_count": 12,
+          "top_review": {
+            "title": "Tellers and managers are well-trained",
+            "slug": "tellers-and-managers-are-well-trained",
+            "url": "/review/tellers-and-managers-are-well-trained/",
+            "rating": 5,
+            "snippet": "Walked into a branch on vacation in another state. They handled my issue (replacing a debit card lost in a rental car)…"
+          }
+        },
+        {
+          "name": "UrbanRetail Co.",
+          "slug": "urbanretail-co",
+          "url": "/brand/urbanretail-co/",
+          "industry": {
+            "slug": "retail",
+            "name": "Retail"
+          },
+          "short_description": "UrbanRetail Co. is a multi-category online retailer offering apparel, home goods, kitchen products, and small electronics. The company was founded in 2005 in Seattle and ships to customers throughout North America from three regional fulfillment centers.",
+          "average_rating": 3.7,
+          "review_count": 12,
+          "top_review": {
+            "title": "App is genuinely good",
+            "slug": "app-is-genuinely-good",
+            "url": "/review/app-is-genuinely-good/",
+            "rating": 5,
+            "snippet": "The mobile app is well designed. Search is fast, filters work, checkout is one tap. The notifications about deliveries are accurate. I…"
+          }
+        },
+        {
+          "name": "SwiftStream Internet",
+          "slug": "swiftstream-internet",
+          "url": "/brand/swiftstream-internet/",
+          "industry": {
+            "slug": "telecom",
+            "name": "Telecom"
+          },
+          "short_description": "SwiftStream Internet is a fixed wireless ISP serving suburban and rural markets in the American Southwest. Founded in 2014 and headquartered in Austin, Texas, SwiftStream operates approximately 400 wireless tower sites across Texas, New Mexico, Arizona, and parts of Oklahoma.",
+          "average_rating": 3.5,
+          "review_count": 12,
+          "top_review": {
+            "title": "Best ISP option in my zip code",
+            "slug": "best-isp-option-in-my-zip-code",
+            "url": "/review/best-isp-option-in-my-zip-code/",
+            "rating": 5,
+            "snippet": "I had AT&T 6 Mbps DSL before this. SwiftStream is roughly 12x faster for similar money. I would not choose them in…"
+          }
+        },
+        {
+          "name": "HomeShield Pro",
+          "slug": "homeshield-pro",
+          "url": "/brand/homeshield-pro/",
+          "industry": {
+            "slug": "home-services",
+            "name": "Home Services"
+          },
+          "short_description": "HomeShield Pro sells home warranty contracts that cover repair and replacement costs for HVAC systems, major appliances, and plumbing. The company was founded in 1999 in Atlanta, Georgia and serves homeowners in 47 states.",
+          "average_rating": 3.1,
+          "review_count": 12,
+          "top_review": {
+            "title": "Pool equipment add-on saved us a fortune",
+            "slug": "pool-equipment-add-on-saved-us-a-fortune",
+            "url": "/review/pool-equipment-add-on-saved-us-a-fortune/",
+            "rating": 5,
+            "snippet": "Added the optional pool/spa coverage. The pool pump died in year one. Replacement plus labor would have been $2,800 out of pocket.…"
+          }
+        }
+      ]
+    }
+  }
+}
