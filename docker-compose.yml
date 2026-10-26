@@ -87,6 +87,131 @@ services:
       PMA_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp}
       UPLOAD_LIMIT: 256M
 
+  # --- Django services (app, auth) and their Postgres databases -------------------------------
+
+  app-db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD:-app}
+    volumes:
+      # 18+ images keep PGDATA in a versioned subdirectory of /var/lib/postgresql.
+      - app_db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "app", "-d", "app"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  auth-db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: auth
+      POSTGRES_DB: auth
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD:-auth}
+    volumes:
+      - auth_db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-shot: writes the dev Ed25519 keypair into dev_keys on first start, keeps it afterwards.
+  dev-keys:
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
+      target: runtime
+    command: ["dev-keys.sh"]
+    volumes:
+      - dev_keys:/keys
+
+  auth:
+    build:
+      context: .
+      dockerfile: services/auth/Dockerfile
+      target: runtime
+    restart: unless-stopped
+    depends_on:
+      dev-keys:
+        condition: service_completed_successfully
+      auth-db:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      DATABASE_URL: postgres://auth:${AUTH_DB_PASSWORD:-auth}@auth-db:5432/auth
+      AUTH_SIGNING_KEY: ${AUTH_SIGNING_KEY:-/keys/signing.pem}
+      AUTH_SIGNING_KID: ${AUTH_SIGNING_KID:-}
+    volumes:
+      - dev_keys:/keys:ro
+    # The kid comes from the generated key unless .env sets one.
+    command:
+      - sh
+      - -c
+      - |
+        [ -n "$$AUTH_SIGNING_KID" ] || export AUTH_SIGNING_KID="$$(cat /keys/public/kid)"
+        exec gunicorn config.wsgi:application --bind 0.0.0.0:8001 --access-logfile -
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/healthz')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: services/app/Dockerfile
+      target: runtime
+    restart: unless-stopped
+    depends_on:
+      dev-keys:
+        condition: service_completed_successfully
+      app-db:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-false}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      DATABASE_URL: postgres://app:${APP_DB_PASSWORD:-app}@app-db:5432/app
+      AUTH_PUBLIC_KEYS: ${AUTH_PUBLIC_KEYS:-}
+    volumes:
+      # Only the public half of dev_keys; the app never sees the signing key.
+      - type: volume
+        source: dev_keys
+        target: /keys
+        read_only: true
+        volume:
+          subpath: public
+    # The public key set comes from the generated key unless .env sets one.
+    command:
+      - sh
+      - -c
+      - |
+        [ -n "$$AUTH_PUBLIC_KEYS" ] || export AUTH_PUBLIC_KEYS="$$(cat /keys/public-keys.json)"
+        exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --access-logfile -
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
 volumes:
   db_data:
   wp_files:
+  app_db_data:
+  auth_db_data:
+  dev_keys:
