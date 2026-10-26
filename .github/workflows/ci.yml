@@ -17,8 +17,6 @@ jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    env:
-      BUILDX_CACHE: ${{ runner.temp }}/buildx-cache
     steps:
       - uses: actions/checkout@v7
       # The docker-container driver can export a type=local layer cache; the default driver can't.
@@ -30,11 +28,16 @@ jobs:
           restore-keys: |
             buildx-${{ runner.os }}-${{ hashFiles('services/app/Dockerfile', 'uv.lock', 'frontend/package-lock.json') }}-
             buildx-${{ runner.os }}-
+      # The runner context isn't available in job-level env, so the cache dir is set per step.
       - run: make check
+        env:
+          BUILDX_CACHE: ${{ runner.temp }}/buildx-cache
       # Buildx wrote a fresh cache next to the one it read; keep only the fresh one so the cache
       # doesn't grow with every run.
       - name: Rotate buildx cache
         if: always()
+        env:
+          BUILDX_CACHE: ${{ runner.temp }}/buildx-cache
         run: |
           if [ -d "$BUILDX_CACHE-new" ]; then
             rm -rf "$BUILDX_CACHE"
