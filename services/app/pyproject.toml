@@ -42,3 +42,10 @@ django_settings_module = "config.settings"
 testpaths = ["tests", "catalog/tests", "api/tests"]
 pythonpath = ["."]
 django_find_project = false
+
+# The root ruff config, plus this service's packages as first-party (ruff can't tell from here).
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[tool.ruff.lint.isort]
+known-first-party = ["api", "catalog", "config", "tests"]
