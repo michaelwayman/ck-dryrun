@@ -32,7 +32,7 @@ Defines exactly what each importer reads from WordPress and how each field maps 
 | `post_title` | `name` | |
 | `post_name` | `slug` | Copied verbatim (C3). |
 | `post_content` | `content` | Raw HTML. Sanitized at render (T13). |
-| first `<p>` of `post_content`, tag-stripped | `short_description` | Set on create. On update it is overwritten only if the stored value still equals the previously imported value, so editor edits survive. |
+| first `<p>` of `post_content`, as plain text | `short_description` | Plain text: tags stripped, HTML entities decoded (`&amp;` → `&`), whitespace collapsed to single spaces and trimmed. Templates escape it on output. Set on create. On update it is overwritten only if the stored value still equals the previously imported value, so editor edits survive. |
 | meta `website_url` | `website_url` | Empty string → `""`. |
 | meta `founded_year` | `founded_year` | Integer or null. |
 | meta `headquarters` | `headquarters` | |
@@ -83,7 +83,7 @@ Industries 5, brands 5, reviews 60, users 9 (1 editor, 8 readers).
 
 ## Examples
 In [wp-source/examples/](wp-source/examples/):
-- `brand-row.json`: one brand's source columns and meta, with the resulting `Brand` fields.
+- `brand-row.json`: one brand's source columns and meta, with the resulting `Brand` fields, plus `short_description_cases` showing entity decoding and whitespace collapsing.
 - `review-row.json`: the same for one review.
 - `user-row.json`: the same for one user.
 - `import-summary.json`: the output of a first run and of a re-run.

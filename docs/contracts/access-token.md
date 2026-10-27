@@ -36,7 +36,7 @@ A compact JWS (RFC 7519), signed with Ed25519.
 5. Check that `v` is in the supported set, which is `{1}` for library 1.x.
 
 ## Keys
-- The auth service holds the private key, `AUTH_SIGNING_KEY`, a PEM file mounted from `.env` or a generated dev key. The private key is never committed.
+- The auth service holds the private key, `AUTH_SIGNING_KEY`, a PEM file mounted from `.env` or a generated dev key. A real private key is never committed. The one exception is the TEST-ONLY mock key in [access-token/mock/test-keypair/](access-token/mock/test-keypair/), which signs the example tokens and is never used outside tests.
 - The app gets `AUTH_PUBLIC_KEYS`, a JSON object `{"<kid>": "<PEM public key>"}` from env. It may hold several keys at once to support rotation.
 - To rotate:
   1. Add the new public key to the app.
@@ -52,7 +52,7 @@ A compact JWS (RFC 7519), signed with Ed25519.
   4. After one TTL, release a version that drops the old `v`.
 
 ## Examples
-Decoded header and payload pairs are in [access-token/examples/](access-token/examples/). Signed test tokens are produced from the M1 test keypair fixture, not stored here.
+Decoded header and payload pairs are in [access-token/examples/](access-token/examples/). Signed test tokens, one per example, are committed in [access-token/mock/tokens/](access-token/mock/tokens/); [access-token/mock/README.md](access-token/mock/README.md) says how they are generated and the `verify_at` time for each.
 
 | File | Case | Expected outcome |
 |---|---|---|

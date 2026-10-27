@@ -36,5 +36,12 @@
       "seo_description": "Read 12 independent customer reviews of Acme Insurance, a Hartford-based insurer offering auto, home, and umbrella policies in 38 US states.",
       "is_active": true
     }
-  }
+  },
+  "short_description_cases": [
+    {
+      "note": "Entities decoded, whitespace collapsed and trimmed; only the first <p> is used.",
+      "post_content": "<p>  Beta &amp; Sons is a\n  <em>synthetic</em> bank.</p><p>Second paragraph.</p>",
+      "short_description": "Beta & Sons is a synthetic bank."
+    }
+  ]
 }
