@@ -19,3 +19,8 @@ packages = ["src/tokenauth"]
 [tool.mypy]
 strict = true
 files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers"]
+markers = ["drf: needs the drf extra (Django and DRF); run with `pytest -m drf`"]
