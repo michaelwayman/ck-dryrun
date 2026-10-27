@@ -5,8 +5,18 @@ requires-python = ">=3.14"
 dependencies = [
     "Django>=5.2,<5.3",
     "django-environ>=0.14,<1",
+    # 26.x requires Django>=5.2 (T2).
+    "django-filter>=26,<27",
+    # 3.18 is the first release supporting Django 5.2 and Python 3.14; tokenauth[drf] needs >=3.18.
+    "djangorestframework>=3.18,<3.19",
+    # 0.30 lists Django 5.2 and Python 3.14 and accepts DRF>=3.10.3.
+    "drf-spectacular>=0.30,<0.31",
     "gunicorn>=26,<27",
-    "tokenauth>=1,<2",
+    # Binary wheels for cp314 on linux x86_64 and aarch64 (T3).
+    "psycopg[binary]>=3.3,<4",
+    # Pure-Python MariaDB driver for import_wp (T6).
+    "pymysql>=1.1,<2",
+    "tokenauth[drf]>=1,<2",
 ]
 
 [tool.uv]
@@ -18,17 +28,17 @@ tokenauth = { workspace = true }
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
 check_untyped_defs = true
-files = ["config", "tests"]
+files = ["config", "catalog", "api", "tests"]
 
-# django-environ ships no type hints.
+# django-environ, django-filter and PyMySQL ship no type hints.
 [[tool.mypy.overrides]]
-module = ["environ"]
+module = ["environ", "django_filters", "django_filters.*", "pymysql", "pymysql.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]
 django_settings_module = "config.settings"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "catalog/tests", "api/tests"]
 pythonpath = ["."]
 django_find_project = false
