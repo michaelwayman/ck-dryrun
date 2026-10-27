@@ -10,7 +10,7 @@ export function Loading() {
       <p className="brand-list__sr-only">Loading brands…</p>
       <div className="grid" aria-hidden="true">
         {Array.from({ length: SKELETON_CARDS }, (_, i) => (
-          <div key={i} className="card brand-list__skeleton">
+          <div key={i} className="card">
             <span className="brand-list__skeleton-line" />
             <span className="brand-list__skeleton-line" />
             <span className="brand-list__skeleton-line" />

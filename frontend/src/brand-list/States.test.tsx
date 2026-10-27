@@ -33,7 +33,7 @@ describe("<BrandList /> states", () => {
     const { container } = render(<BrandList config={CONFIG} />);
 
     expect(results().getAttribute("aria-busy")).toBe("true");
-    expect(results().querySelectorAll(".brand-list__skeleton")).toHaveLength(3);
+    expect(results().querySelectorAll(".card")).toHaveLength(3);
     expect(liveRegion().textContent).toBe("");
     expect(await axe(container)).toHaveNoViolations();
   });
