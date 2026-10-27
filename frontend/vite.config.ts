@@ -5,6 +5,9 @@ import { defineConfig } from "vitest/config";
 // bundled in, so the Django page loads a single script and needs no import map.
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  // The brands-api mock lives in docs/contracts/, outside this package; resolve its msw import
+  // from frontend/node_modules.
+  resolve: { dedupe: ["msw"] },
   // Library mode leaves process.env.NODE_ENV in place; the browser has no `process`.
   define: { "process.env.NODE_ENV": JSON.stringify(mode) },
   build: {
