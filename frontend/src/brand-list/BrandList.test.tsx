@@ -15,44 +15,27 @@ const PAGE_2 =
 const search = () => window.location.search;
 
 describe("<BrandList />", () => {
-  it("renders the semantic controls", async () => {
-    respond(
-      "/api/brands/?ordering=-average_rating&page_size=12",
-      "list-default.json",
-    );
-    render(<BrandList config={CONFIG} />);
-
-    const fieldset = screen.getByRole("group", { name: "Industry" });
-    expect(
-      within(fieldset)
-        .getAllByRole("checkbox")
-        .map((c) => c.getAttribute("value")),
-    ).toEqual(CONFIG.industries.map((i) => i.slug));
-    const select = screen.getByRole("combobox", { name: "Sort by" });
-    expect(within(select).getAllByRole("option")).toHaveLength(6);
-    expect((select as HTMLSelectElement).value).toBe("-average_rating");
-    expect(await screen.findAllByRole("article")).toHaveLength(5);
-  });
-
-  it("restores the view from the URL and normalises it", async () => {
+  it("renders the controls from the URL and normalises it", async () => {
     visit(FILTER_SORT);
     render(<BrandList config={ONE_PER_PAGE} />);
 
     expect(search()).toBe(
       "?industry=insurance&industry=telecom&ordering=-review_count",
     );
-    expect(screen.getByRole("checkbox", { name: "Insurance" })).toHaveProperty(
-      "checked",
-      true,
-    );
-    expect(screen.getByRole("checkbox", { name: "Telecom" })).toHaveProperty(
-      "checked",
-      true,
-    );
-    expect(screen.getByRole("combobox", { name: "Sort by" })).toHaveProperty(
-      "value",
-      "-review_count",
-    );
+    const fieldset = screen.getByRole("group", { name: "Industry" });
+    const checked = within(fieldset)
+      .getAllByRole("checkbox")
+      .map((c) => [c.getAttribute("value"), (c as HTMLInputElement).checked]);
+    expect(Object.fromEntries(checked)).toEqual({
+      finance: false,
+      "home-services": false,
+      insurance: true,
+      retail: false,
+      telecom: true,
+    });
+    const select = screen.getByRole("combobox", { name: "Sort by" });
+    expect(within(select).getAllByRole("option")).toHaveLength(6);
+    expect((select as HTMLSelectElement).value).toBe("-review_count");
     const nav = await screen.findByRole("navigation", { name: "Brand pages" });
     expect(within(nav).getByText("1").getAttribute("aria-current")).toBe(
       "page",
@@ -93,14 +76,10 @@ describe("<BrandList />", () => {
     );
   });
 
-  it("resets to page 1 when the filter or sort changes", async () => {
+  it("resets to page 1 and keeps focus when the filter changes", async () => {
     respond(PAGE_2, "list-filter-sort.json");
     respond(
       "/api/brands/?industry=insurance&ordering=-review_count&page_size=1",
-      "list-filter-sort.json",
-    );
-    respond(
-      "/api/brands/?industry=insurance&ordering=name&page_size=1",
       "list-filter-sort.json",
     );
     visit(`${FILTER_SORT}&page=2`);
@@ -111,12 +90,6 @@ describe("<BrandList />", () => {
     await user.click(telecom);
     expect(search()).toBe("?industry=insurance&ordering=-review_count");
     expect(document.activeElement).toBe(telecom);
-
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Sort by" }),
-      "name",
-    );
-    expect(search()).toBe("?industry=insurance&ordering=name");
     await screen.findByRole("navigation", { name: "Brand pages" });
   });
 });

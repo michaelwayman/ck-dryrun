@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import urlStates from "../../../docs/contracts/brandlist-mount/examples/url-states.json";
 import { CONFIG } from "./test-server";
+import type { ListState } from "./types";
 import { apiRequestUrl, nextState, parseState, writeSearch } from "./url-state";
 
 const search = (pageUrl: string) => new URL(pageUrl, "http://x").search;
+const START: ListState = { industries: ["retail"], ordering: "name", page: 3 };
 const pathAndQuery = (url: URL) => `${url.pathname}${url.search}`;
 
 describe("url-states.json", () => {
@@ -42,36 +44,20 @@ describe("parseState", () => {
 
 describe("writeSearch", () => {
   it("keeps other keys and rewrites ours after them", () => {
-    const state = {
-      industries: ["retail"],
-      ordering: "name",
-      page: 3,
-    } as const;
-
     expect(
-      writeSearch(
-        "?page=9&utm_source=mail&industry=x&ref=1",
-        { ...state, industries: [...state.industries] },
-        CONFIG,
-      ),
+      writeSearch("?page=9&utm_source=mail&industry=x&ref=1", START, CONFIG),
     ).toBe("?utm_source=mail&ref=1&industry=retail&ordering=name&page=3");
   });
 });
 
 describe("nextState", () => {
-  const state = { industries: ["retail"], ordering: "name", page: 3 } as const;
-  const start = { ...state, industries: [...state.industries] };
-
   it("resets the page when the filter or sort changes", () => {
-    expect(nextState(start, { industries: ["telecom", "finance"] })).toEqual({
+    expect(nextState(START, { industries: ["telecom", "finance"] })).toEqual({
       industries: ["finance", "telecom"],
       ordering: "name",
       page: 1,
     });
-    expect(nextState(start, { ordering: "-name" }).page).toBe(1);
-  });
-
-  it("keeps the filter and sort when the page changes", () => {
-    expect(nextState(start, { page: 4 })).toEqual({ ...start, page: 4 });
+    expect(nextState(START, { ordering: "-name" }).page).toBe(1);
+    expect(nextState(START, { page: 4 })).toEqual({ ...START, page: 4 });
   });
 });

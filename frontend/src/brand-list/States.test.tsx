@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { delay, http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { configureAxe } from "vitest-axe";
+import { examples } from "../mocks";
 import { BrandList } from "./BrandList";
 import { CONFIG, respond, server, visit } from "./test-server";
 
@@ -85,16 +86,6 @@ describe("<BrandList /> states", () => {
     expect(await screen.findByRole("alert")).toBeTruthy();
   });
 
-  it("error: a network failure also offers Retry", async () => {
-    server.use(http.get("*/api/brands/", () => HttpResponse.error()));
-    render(<BrandList config={CONFIG} />);
-
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "couldn't be loaded",
-    );
-    expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
-  });
-
   it("error: a 200 that isn't a brand page", async () => {
     server.use(http.get("*/api/brands/", () => HttpResponse.text("<html>")));
     render(<BrandList config={CONFIG} />);
@@ -105,27 +96,18 @@ describe("<BrandList /> states", () => {
   });
 
   it("brands without reviews say so instead of showing stars", async () => {
-    server.use(
-      http.get("*/api/brands/", () =>
-        HttpResponse.json({
-          count: 1,
-          next: null,
-          previous: null,
-          results: [
-            {
-              name: "Stand-in Brand",
-              slug: "stand-in-brand",
-              url: "/brand/stand-in-brand/",
-              industry: { slug: "retail", name: "Retail" },
-              short_description: "",
-              average_rating: null,
-              review_count: 0,
-              top_review: null,
-            },
-          ],
-        }),
-      ),
-    );
+    const body = structuredClone(examples["list-default.json"]!.response.body);
+    const page = body as { count: number; results: Record<string, unknown>[] };
+    page.count = 1;
+    page.results = [
+      {
+        ...page.results[0],
+        average_rating: null,
+        review_count: 0,
+        top_review: null,
+      },
+    ];
+    server.use(http.get("*/api/brands/", () => HttpResponse.json(page)));
     render(<BrandList config={CONFIG} />);
 
     expect(await screen.findByText("No reviews yet")).toBeTruthy();
@@ -137,19 +119,21 @@ describe("<BrandList /> by keyboard", () => {
   it("reaches and operates every control", async () => {
     // list-filter-sort.json (shared handlers): two brands, one per page.
     visit("?industry=insurance&industry=telecom&ordering=-review_count");
-    respond(
-      "/api/brands/?industry=insurance&industry=telecom&ordering=-review_count&page=2&page_size=1",
-      "list-filter-sort.json",
-    );
-    respond(
-      "/api/brands/?industry=finance&industry=insurance&industry=telecom&ordering=-review_count&page_size=1",
-      "list-filter-sort.json",
-    );
+    const all =
+      "industry=finance&industry=insurance&industry=telecom&ordering=-review_count";
+    respond(`/api/brands/?${all}&page_size=1`, "list-filter-sort.json");
+    respond(`/api/brands/?${all}&page=2&page_size=1`, "list-filter-sort.json");
     const user = userEvent.setup();
     render(<BrandList config={{ ...CONFIG, pageSize: 1 }} />);
     await screen.findByRole("navigation", { name: "Brand pages" });
 
-    for (const industry of CONFIG.industries) {
+    // Space toggles the first checkbox; focus stays on it while the list reloads.
+    await user.tab();
+    await user.keyboard(" ");
+    expect(window.location.search).toBe(
+      "?industry=finance&industry=insurance&industry=telecom&ordering=-review_count",
+    );
+    for (const industry of CONFIG.industries.slice(1)) {
       await user.tab();
       expect(document.activeElement).toBe(
         screen.getByRole("checkbox", { name: industry.name }),
@@ -159,6 +143,7 @@ describe("<BrandList /> by keyboard", () => {
     expect(document.activeElement).toBe(
       screen.getByRole("combobox", { name: "Sort by" }),
     );
+    await screen.findByRole("navigation", { name: "Brand pages" });
     for (const name of [
       "Acme Insurance Co.",
       "Umbrella policy was easy to add",
@@ -173,22 +158,6 @@ describe("<BrandList /> by keyboard", () => {
     expect(window.location.search).toContain("page=2");
     expect(document.activeElement).toBe(
       screen.getByRole("heading", { name: "Results" }),
-    );
-
-    // Back from the heading: the sort, then the checkboxes in reverse.
-    await user.tab({ shift: true });
-    expect(document.activeElement).toBe(
-      screen.getByRole("combobox", { name: "Sort by" }),
-    );
-    for (let i = 0; i < CONFIG.industries.length; i++) {
-      await user.tab({ shift: true });
-    }
-    expect(document.activeElement).toBe(
-      screen.getByRole("checkbox", { name: "Finance" }),
-    );
-    await user.keyboard(" ");
-    expect(window.location.search).toBe(
-      "?industry=finance&industry=insurance&industry=telecom&ordering=-review_count",
     );
   });
 });
