@@ -78,9 +78,6 @@ export function BrandList({ config }: { config: MountConfig }) {
         )}
         {result.status === "success" && result.data.count === 0 && (
           <Empty
-            filters={config.industries
-              .filter((industry) => state.industries.includes(industry.slug))
-              .map((industry) => industry.name)}
             onClear={
               state.industries.length > 0
                 ? () => reload(() => navigate({ industries: [] }))

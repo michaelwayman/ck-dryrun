@@ -75,7 +75,6 @@ describe("<BrandList /> states", () => {
     ).toBeTruthy();
     expect(liveRegion().textContent).toBe("0 brands found.");
     expect(heading().textContent).toBe("No brands");
-    expect(screen.getByText("Filtered by Retail.")).toBeTruthy();
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Clear filters" }));

@@ -30,21 +30,11 @@ export function Loading() {
   );
 }
 
-// Without `onClear` nothing is filtered, so there is nothing to clear. `filters` names the
-// industries that are checked.
-export function Empty({
-  filters,
-  onClear,
-}: {
-  filters: string[];
-  onClear?: () => void;
-}) {
+// Without `onClear` nothing is filtered, so there is nothing to clear.
+export function Empty({ onClear }: { onClear?: () => void }) {
   return (
     <div className="brand-list__empty">
       <p className="brand-list__state-title">No brands match these filters.</p>
-      {filters.length > 0 && (
-        <p className="meta">Filtered by {filters.join(", ")}.</p>
-      )}
       {onClear && (
         <button type="button" className="brand-list__button" onClick={onClear}>
           Clear filters
