@@ -115,6 +115,14 @@ GitHub Project: https://github.com/users/michaelwayman/projects/4 (number 4)
   - A polite `aria-live` region announces the result count after each load.
   - Every control works by keyboard with a visible `:focus-visible` style. Stars use `role="img"` with an accessible label. The axe check in Vitest reports no violations in each state.
   - The layout is a single column at 375px and a multi-column grid on desktop, with no horizontal scroll at 320px.
+  - **Visual** ([research §10](docs/research.md#10-brandlist-visual-design)), checked on screenshots at 375px and 1280px attached to the PR:
+    - Each card leads with the name, then a rating row (stars, value, review count); the industry badge follows as a label.
+    - Cards in a row share a height. The top review is a labelled block aligned to the card bottom.
+    - Filter controls are at least 40px tall, with a border contrast of at least 3:1.
+    - A visible heading shows the result count.
+    - The loading skeleton matches the card layout.
+    - Empty and error states each show a short message and one primary action. The error shows no raw error text.
+    - New styles stay under `brand-list__*` with Sass-only scales. The reference selector diff (R9) still passes.
 
 ### R9. SCSS source tree for the theme
 - Source: CHALLENGE.md § Pillar 4; § Decision 6
@@ -304,3 +312,4 @@ GitHub Project: https://github.com/users/michaelwayman/projects/4 (number 4)
 | Date | Change | By |
 |---|---|---|
 | 2026-10-26 | Initial spec | kickoff |
+| 2026-10-27 | Alter R8: add visual acceptance from research §10, checked on screenshots at 375px and 1280px (size M) | change-spec |
