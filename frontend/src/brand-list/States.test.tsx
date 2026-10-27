@@ -17,6 +17,7 @@ const PAGE_9_REQUEST =
   "/api/brands/?ordering=-average_rating&page=9&page_size=12";
 
 const results = () => document.querySelector(".brand-list__results")!;
+const heading = () => screen.getByRole("heading", { name: "Results" });
 const liveRegion = () => document.querySelector("[aria-live=polite]")!;
 
 function countRequests(apiRequest: string) {
@@ -68,6 +69,15 @@ describe("<BrandList /> states", () => {
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
     expect(window.location.search).toBe("");
     expect(await screen.findAllByRole("article")).toHaveLength(5);
+    expect(document.activeElement).toBe(heading());
+  });
+
+  it("empty and unfiltered: no Clear filters", async () => {
+    respond(DEFAULT_REQUEST, "list-empty.json");
+    render(<BrandList config={CONFIG} />);
+
+    expect(await screen.findByText("No brands to show yet.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
   });
 
   it("error: an alert whose Retry repeats the request", async () => {
@@ -84,6 +94,31 @@ describe("<BrandList /> states", () => {
     await user.click(screen.getByRole("button", { name: "Retry" }));
     await waitFor(() => expect(requests()).toBe(2));
     expect(await screen.findByRole("alert")).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(heading()));
+  });
+
+  it("error: a page past the end links to page 1, keeping the view", async () => {
+    respond(
+      "/api/brands/?industry=retail&ordering=name&page=9&page_size=12",
+      "list-page-out-of-range.json",
+    );
+    respond(
+      "/api/brands/?industry=retail&ordering=name&page_size=12",
+      "list-empty.json",
+    );
+    visit("?industry=retail&ordering=name&page=9");
+    const user = userEvent.setup();
+    render(<BrandList config={CONFIG} />);
+
+    const link = await screen.findByRole("link", { name: "Go to page 1" });
+    expect(link.getAttribute("href")).toBe(
+      "/brand/?industry=retail&ordering=name",
+    );
+    await user.click(link);
+    expect(window.location.search).toBe("?industry=retail&ordering=name");
+    expect(
+      await screen.findByText("No brands match these filters."),
+    ).toBeTruthy();
   });
 
   it("error: a 200 that isn't a brand page", async () => {

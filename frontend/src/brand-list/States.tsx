@@ -1,4 +1,5 @@
 // The loading, empty and error states, and the live region that announces each result.
+import type { MouseEvent } from "react";
 import type { BrandsApiError } from "./types";
 
 const SKELETON_CARDS = 3;
@@ -21,23 +22,35 @@ export function Loading() {
   );
 }
 
-export function Empty({ onClear }: { onClear: () => void }) {
+// Without `onClear` nothing is filtered, so there is nothing to clear.
+export function Empty({ onClear }: { onClear?: () => void }) {
   return (
     <div className="brand-list__empty">
-      <p>No brands match these filters.</p>
-      <button type="button" className="brand-list__button" onClick={onClear}>
-        Clear filters
-      </button>
+      <p>
+        {onClear ? "No brands match these filters." : "No brands to show yet."}
+      </p>
+      {onClear && (
+        <button type="button" className="brand-list__button" onClick={onClear}>
+          Clear filters
+        </button>
+      )}
     </div>
   );
+}
+
+function opensElsewhere(e: MouseEvent) {
+  return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
 }
 
 export function ErrorState({
   error,
   onRetry,
+  firstPage,
 }: {
   error: BrandsApiError;
   onRetry: () => void;
+  // Page 1 of the same view, offered for a page past the end (brands-api: 404 `not_found`).
+  firstPage?: { href: string; onClick: () => void };
 }) {
   const message =
     error.code === "not_found"
@@ -51,6 +64,19 @@ export function ErrorState({
       <button type="button" className="brand-list__button" onClick={onRetry}>
         Retry
       </button>
+      {firstPage && error.code === "not_found" && (
+        <a
+          className="brand-list__button"
+          href={firstPage.href}
+          onClick={(e) => {
+            if (opensElsewhere(e)) return;
+            e.preventDefault();
+            firstPage.onClick();
+          }}
+        >
+          Go to page 1
+        </a>
+      )}
     </div>
   );
 }
