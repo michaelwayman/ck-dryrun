@@ -38,7 +38,7 @@ def test_signing_key(settings: Settings) -> None:
 
 
 def make_user(username: str, password: str, *roles: str, **fields: Any) -> User:
-    # Imported here: this conftest loads before Django is set up.
+    # Imported here: pytest loads conftests in testpaths before Django is set up.
     from accounts.models import Role, User
 
     user = User.objects.create_user(username, password=password, **fields)

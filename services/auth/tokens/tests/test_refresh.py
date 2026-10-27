@@ -68,11 +68,11 @@ def test_replaying_a_rotated_token_revokes_the_whole_family(client: Client, admi
     assert not RefreshToken.objects.filter(revoked_at__isnull=True).exists()
 
 
-@pytest.mark.parametrize("case", ["unknown", "expired", "inactive"])
+@pytest.mark.parametrize("case", ["unknown", "blank", "expired", "inactive"])
 def test_dead_tokens_are_invalid_refresh(client: Client, admin: User, case: str) -> None:
     token = login(client)["refresh"]
-    if case == "unknown":
-        token = "x" * 43
+    if case in ("unknown", "blank"):
+        token = "x" * 43 if case == "unknown" else ""
     elif case == "expired":
         day_ago = timezone.now() - timedelta(days=1, seconds=1)
         RefreshToken.objects.update(created_at=day_ago, expires_at=day_ago + timedelta(days=1))
@@ -89,7 +89,7 @@ def test_logout_revokes_and_is_idempotent(client: Client, admin: User) -> None:
     example = contract_example("auth-api", "logout-ok.json")
     token = login(client)["refresh"]
 
-    for refresh in (token, token, "never-issued"):
+    for refresh in (token, token, "never-issued", ""):
         response = post(client, example["request"]["path"], {"refresh": refresh})
         assert response.status_code == example["response"]["status"] == 204
         assert response.content == b""

@@ -47,12 +47,12 @@ def test_refresh_token_is_stored_only_as_a_hash_for_24_hours(client: Client) -> 
     assert (stored.expires_at - stored.created_at).total_seconds() == 24 * 3600
 
 
-@pytest.mark.parametrize("case", ["unknown", "wrong", "inactive"])
+@pytest.mark.parametrize("case", ["unknown", "wrong", "inactive", "blank"])
 def test_bad_credentials_share_one_401(client: Client, case: str) -> None:
     example = contract_example("auth-api", "login-bad-credentials.json")
     make_user("admin", "admin", "editor", is_active=case != "inactive")
-    username = "ghost" if case == "unknown" else "admin"
-    password = "wrong" if case == "wrong" else "admin"
+    username = {"unknown": "ghost", "blank": ""}.get(case, "admin")
+    password = {"wrong": "wrong", "blank": ""}.get(case, "admin")
 
     response = client.post(
         "/api/token/", {"username": username, "password": password}, content_type="application/json"

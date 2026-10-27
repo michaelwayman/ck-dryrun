@@ -107,6 +107,14 @@ def test_capabilities_are_read_with_a_regex(meta: str | None, expected: set[str]
     assert import_wp_users.capabilities(meta) == expected
 
 
+def test_username_taken_by_a_local_user_rolls_back_with_a_clear_error() -> None:
+    User.objects.create_user("mock_reader")  # created here, no wp_user_id
+
+    with pytest.raises(CommandError, match="rolled back"):
+        run()
+    assert not User.objects.filter(wp_user_id__isnull=False).exists()
+
+
 def test_unreachable_db_retries_then_fails(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.undo()  # the real connect_wp
     attempts = []

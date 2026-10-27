@@ -12,7 +12,7 @@ from typing import Any
 import pymysql
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from accounts.models import Role, User
 
@@ -138,5 +138,8 @@ class Command(BaseCommand):
             wp_users = read_wp_users(connection, settings.WP_DB["table_prefix"])
         finally:
             connection.close()
-        created, updated = upsert(wp_users)
+        try:
+            created, updated = upsert(wp_users)
+        except IntegrityError as exc:  # e.g. a WP user_login already taken by a local user
+            raise CommandError(f"Import rolled back, nothing written: {exc}") from exc
         self.stdout.write(f"users: created {created}, updated {updated}")

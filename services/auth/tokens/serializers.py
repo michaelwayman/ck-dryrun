@@ -5,7 +5,14 @@ from rest_framework import serializers
 
 
 class StrictCharField(serializers.CharField):
-    """A CharField that rejects non-strings; DRF's own turns 123 into "123"."""
+    """A CharField that rejects non-strings (DRF's own turns 123 into "123") and accepts "".
+
+    auth-api gives 400 only for a missing or non-string field; an empty one is just a wrong
+    credential (401) or an unknown refresh token (401, or 204 on logout).
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(allow_blank=True, trim_whitespace=False, **kwargs)
 
     def to_internal_value(self, data: Any) -> str:
         if not isinstance(data, str):
@@ -14,12 +21,12 @@ class StrictCharField(serializers.CharField):
 
 
 class LoginSerializer(serializers.Serializer[None]):
-    username = StrictCharField(trim_whitespace=False)
-    password = StrictCharField(trim_whitespace=False, style={"input_type": "password"})
+    username = StrictCharField()
+    password = StrictCharField(style={"input_type": "password"})
 
 
 class RefreshSerializer(serializers.Serializer[None]):
-    refresh = StrictCharField(trim_whitespace=False)
+    refresh = StrictCharField()
 
 
 class TokenPairSerializer(serializers.Serializer[None]):
