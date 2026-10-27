@@ -19,14 +19,14 @@ def post(client: Client, path: str, body: Any) -> Any:
 
 def login(client: Client) -> dict[str, Any]:
     body: dict[str, Any] = post(
-        client, "/api/token/", {"username": "admin", "password": "admin"}
+        client, "/api/token/", {"username": "editor1", "password": "stand-in-pw"}
     ).json()
     return body
 
 
 @pytest.fixture
 def admin() -> User:
-    return make_user("admin", "admin", "editor")
+    return make_user("editor1", "stand-in-pw", "editor")
 
 
 def test_refresh_ok_rotates_and_matches_the_contract(client: Client, admin: User) -> None:
@@ -40,7 +40,7 @@ def test_refresh_ok_rotates_and_matches_the_contract(client: Client, admin: User
     body = response.json()
     assert set(body) == set(example["response"]["body"])
     assert body["refresh"] != token_a and body["expires_in"] == 600
-    assert verify_token(body["access"], verifier_config()).username == "admin"
+    assert verify_token(body["access"], verifier_config()).username == "editor1"
 
 
 def test_role_change_shows_in_the_refreshed_token(client: Client, admin: User) -> None:

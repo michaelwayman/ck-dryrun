@@ -3,6 +3,7 @@ import pytest
 from accounts.models import User
 from django.db import OperationalError
 from django.test import Client
+from pytest_django.fixtures import Settings
 from tokenauth import verify_token
 
 from tokens.models import RefreshToken
@@ -17,7 +18,8 @@ def post(client: Client, path: str, body: object) -> object:
 
 def test_login_ok_matches_the_contract() -> None:
     example = contract_example("auth-api", "login-ok.json")
-    make_user("admin", "admin", "editor")
+    creds = example["request"]["body"]
+    make_user(creds["username"], creds["password"], "editor")
 
     response = Client().post(
         example["request"]["path"], example["request"]["body"], content_type="application/json"
@@ -30,15 +32,17 @@ def test_login_ok_matches_the_contract() -> None:
     assert body["token_type"] == "Bearer"  # noqa: S105 (not a password)
     assert body["expires_in"] == 600
     claims = verify_token(body["access"], verifier_config())
-    assert claims.username == "admin" and [r.value for r in claims.roles] == ["editor"]
+    assert claims.username == creds["username"] and [r.value for r in claims.roles] == ["editor"]
     header = jwt.get_unverified_header(body["access"])
     assert header == {"alg": "EdDSA", "typ": "JWT", "kid": "test-2026-10"}
 
 
 def test_refresh_token_is_stored_only_as_a_hash_for_24_hours(client: Client) -> None:
-    make_user("admin", "admin", "editor")
+    make_user("editor1", "stand-in-pw", "editor")
     raw = client.post(
-        "/api/token/", {"username": "admin", "password": "admin"}, content_type="application/json"
+        "/api/token/",
+        {"username": "editor1", "password": "stand-in-pw"},
+        content_type="application/json",
     ).json()["refresh"]
 
     assert len(raw) >= 43
@@ -50,9 +54,9 @@ def test_refresh_token_is_stored_only_as_a_hash_for_24_hours(client: Client) -> 
 @pytest.mark.parametrize("case", ["unknown", "wrong", "inactive", "blank"])
 def test_bad_credentials_share_one_401(client: Client, case: str) -> None:
     example = contract_example("auth-api", "login-bad-credentials.json")
-    make_user("admin", "admin", "editor", is_active=case != "inactive")
-    username = {"unknown": "ghost", "blank": ""}.get(case, "admin")
-    password = {"wrong": "wrong", "blank": ""}.get(case, "admin")
+    make_user("editor1", "stand-in-pw", "editor", is_active=case != "inactive")
+    username = {"unknown": "ghost", "blank": ""}.get(case, "editor1")
+    password = {"wrong": "wrong", "blank": ""}.get(case, "stand-in-pw")
 
     response = client.post(
         "/api/token/", {"username": username, "password": password}, content_type="application/json"
@@ -75,7 +79,7 @@ def test_missing_field_matches_the_contract(client: Client) -> None:
 
 
 @pytest.mark.parametrize(
-    "body", [{"username": "admin", "password": 123}, {"username": None, "password": "x"}, [1]]
+    "body", [{"username": "editor1", "password": 123}, {"username": None, "password": "x"}, [1]]
 )
 def test_non_string_fields_are_invalid_body(client: Client, body: object) -> None:
     response = client.post("/api/token/", body, content_type="application/json")
@@ -122,6 +126,20 @@ def test_database_down_is_503(client: Client, monkeypatch: pytest.MonkeyPatch) -
 
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "unavailable"
+
+
+def test_failed_mint_is_500_and_stores_no_refresh_token(settings: Settings) -> None:
+    make_user("editor1", "stand-in-pw", "editor")
+    settings.AUTH_SIGNING_KEY = ""
+
+    response = Client(raise_request_exception=False).post(
+        "/api/token/",
+        {"username": "editor1", "password": "stand-in-pw"},
+        content_type="application/json",
+    )
+
+    assert response.status_code == 500
+    assert not RefreshToken.objects.exists()
 
 
 def test_get_is_not_allowed(client: Client) -> None:

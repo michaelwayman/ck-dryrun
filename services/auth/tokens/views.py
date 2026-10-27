@@ -34,8 +34,7 @@ class TokenView(APIView):
         return response
 
     @staticmethod
-    def token_pair(user: User, refresh_token: str) -> Response:
-        access = mint_access_token(user, timezone.now())
+    def token_pair(access: str, refresh_token: str) -> Response:
         return Response(TokenPairSerializer.pair(access, refresh_token))
 
 
@@ -58,7 +57,10 @@ class LoginView(TokenView):
         )
         if not isinstance(user, User):
             raise InvalidCredentials
-        return self.token_pair(user, refresh.issue(user, timezone.now()))
+        now = timezone.now()
+        # Mint first: a signing failure must not leave a stored refresh token the client never got.
+        access = mint_access_token(user, now)
+        return self.token_pair(access, refresh.issue(user, now))
 
 
 class RefreshView(TokenView):
@@ -76,7 +78,7 @@ class RefreshView(TokenView):
             user, new_refresh = refresh.rotate(body.validated_data["refresh"], timezone.now())
         except refresh.InvalidRefreshToken:
             raise InvalidRefresh from None
-        return self.token_pair(user, new_refresh)
+        return self.token_pair(mint_access_token(user, timezone.now()), new_refresh)
 
 
 class LogoutView(TokenView):
