@@ -42,6 +42,7 @@ def test_sanitize_strips_scripts_handlers_and_unsafe_urls() -> None:
     assert "iframe" not in html
     assert "<!--" not in html
     assert "<style" not in html
+    assert "brand-list" not in sanitize_html('<div id="brand-list">x</div>')
     assert '<img src="https://example.test/a.png">' in html
 
 

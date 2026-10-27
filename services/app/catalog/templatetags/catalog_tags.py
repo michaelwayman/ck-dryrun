@@ -17,7 +17,8 @@ register = template.Library()
 # every on* handler are dropped; nh3 also removes <script>/<style> content and HTML comments.
 _ATTRIBUTES: dict[str, set[str]] = {
     **{tag: set(attrs) for tag, attrs in nh3.ALLOWED_ATTRIBUTES.items()},
-    "*": {"class", "id", "title", "lang", "dir"},
+    # No `id`: a stored id could collide with page ids such as #brand-list (brandlist-mount).
+    "*": {"class", "title", "lang", "dir"},
 }
 _CLEANER = nh3.Cleaner(
     attributes=_ATTRIBUTES,
