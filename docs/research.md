@@ -16,6 +16,7 @@ Brief: CHALLENGE.md. Last updated: 2026-10-26.
 | P8 | Production realism: built like it would ship (tests, a11y, CI, security hygiene) | preference | high | user, 2026-10-26 |
 | P9 | Extensibility in the live session: easy to add a new requirement in ~25 min with AI | preference | medium | user, 2026-10-26 |
 | P10 | Build speed: fewest moving parts and dependencies | preference | medium | user, 2026-10-26 |
+| P11 | Visual polish: the component looks considered and production-grade | preference | high | user, 2026-10-26 |
 
 ## How it fits together
 
@@ -33,6 +34,8 @@ A monorepo on `origin` (`michaelwayman/ck-dryrun`). The WP stack stays untouched
 
 **Frontend build.** `<BrandList />` is a Vite library bundle built in a Docker `node:24-alpine` stage with `npm ci` and served by Django from the same origin. Its URL query is the source of truth. The SCSS tree compiles to the reference CSS structure.
 
+**Look.** `<BrandList />` restyles inside `brand-list__*`: name and rating lead, the cards align, the controls share one 40px height with borders of 3:1 or better, a visible count replaces "Results", and the loading, empty and error states are designed (topic 10).
+
 **Checks.** `make check` runs `lint` (ruff, ESLint, stylelint), `fmt-check` (ruff format, Prettier), `typecheck` (mypy strict on the lib and gradual on the services, `tsc`) and `test` through compose. CI job `check` runs `make check`. There are no host pre-commit hooks.
 
 The pieces fit because each boundary is small and explainable (P7). Auth outage affects only login and refresh. The library is the only code the services share. The frontend talks only to the public API.
@@ -48,6 +51,7 @@ The pieces fit because each boundary is small and explainable (P7). Auth outage 
 | 7. Repo/infra | Monorepo; two Postgres containers; `make check` via compose; CI `check` | C1, C4, C6, P8 | P10 (image build time in CI) |
 | 9. Runtimes/packaging | Python 3.14-slim; uv workspace + hatchling; `psycopg[binary]` + PyMySQL; Node 24-alpine; npm `ci`; multi-stage non-root images; Dependabot | C1, P7, P8 | P10 (uv + root-context rework); P7 (explaining uv) |
 | 8. Tooling | ruff; mypy + stubs (strict lib, gradual services); TS + ESLint 9 + jsx-a11y + Prettier; optional stylelint; `lint`/`fmt-check`/`typecheck` targets | C1, C5, P7, P8 | P10 (stubs + ~8 frontend packages) |
+| 10. BrandList visual | Restyle inside `brand-list__*`: name and rating lead, aligned cards, 40px controls with 3:1 borders, visible count, card-shaped skeleton, designed empty/error; Sass-only type and space scales | P7, P8, P11 | P9 slightly if too many tokens; DOM changes ripple into tests and the R16 fallback |
 
 ### Tensions
 | Between | Where it bites | Options | Recommended resolution | What would flip it |
@@ -62,12 +66,15 @@ The pieces fit because each boundary is small and explainable (P7). Auth outage 
 | P8 vs P10 | Typing and lint toolchain: stubs and ~8 frontend packages with version pins (mypy <2.4, TS ~6.0, ESLint 9) | Full toolchain / ruff + tsc only | Full toolchain, pins recorded; drop stylelint first if time is short | Time pressure (P10 raised) |
 | P7 vs P8/P10 | Python packaging: uv's single hashed lock and speed vs pip's familiarity; uv forces a repo-root context | uv workspace + root context / pip-compile + `additional_contexts` | uv + root context with strict `.dockerignore` (topic 9) | User prefers pip for explainability, or `.dockerignore` proves leaky |
 | P8 vs P10 | Node 24 (Maintenance LTS, to 2028-04) vs Node 26 (LTS from 2026-10-28, longer window) | 24 / 26 | 24, the conservative choice | Preferring the longer window over a two-day-old LTS |
+| P11 vs the reference diff (R9) | Polishing the card would naturally restyle `.card`, which adds selectors to the diff | Restyle inside `brand-list__*` / restyle `.card` / new `--` tokens | `brand-list__*` with Sass-only scales: polish without diff churn | Dropping the selector-diff check, or the brief grading equivalence more tightly |
+| P11 vs P10 | Card DOM reorder and a count heading touch tests and the R16 fallback markup | Full target / CSS-only polish | Full target in one S/M issue; CSS-only if time is short | Time pressure |
 
 ### If priorities change
 - **P10 raised to high:** keep uv (it is also the fastest); parse the dump instead of reading `db` only if the driver dependency proves painful. Use simplejwt for login/refresh. Commit the built bundle instead of a Docker stage. Use a single-select-only API filter.
 - **P8 lowered:** drop stylelint and mypy on the services (keep it strict on the lib), and the soft-delete pass (upsert only), the `kid`/rotation story, axe tests and the selector-diff script.
 - **P9 raised to high:** add a JWKS endpoint (key rotation without redeploy) and the `Source` interface in the importer from day one. Keep the API filter repeatable.
 - **P7 lowered:** consider Django Ninja for typed schemas and OpenAPI.
+- **P11 lowered:** keep only the 3:1 control borders and the matching skeleton (P8 gaps); skip the card reorder and the count heading.
 
 ## Agenda
 
@@ -82,6 +89,7 @@ The pieces fit because each boundary is small and explainable (P7). Auth outage 
 | 7 | Repo, infra, CI | Layout, compose, DB engine, `make check`, CI, delivery remote | done |
 | 8 | Code-quality tooling | Linters, formatters, type checkers, how they run in `make check` (added by follow-up) | done |
 | 9 | Runtimes and package managers | Python/Node versions, uv vs pip, npm vs bun/pnpm, drivers, image strategy (added by follow-up) | done |
+| 10 | BrandList visual design | R8 visual acceptance, new tokens for R9, the look of `_brand-list.scss` and `_cards.scss` (added 2026-10-26) | done |
 
 ## Reconciliations
 
@@ -783,3 +791,97 @@ This serves C1, P7 and P8. It costs a little P10 (uv plus the root-context chang
 Answer: Python 3.14-slim, uv with a single workspace lock, hatchling for the lib, `psycopg[binary]` and PyMySQL as drivers, Node 24-alpine, and npm with `npm ci`. No bun, pnpm or Poetry. Versions are pinned via `.python-version`/`.nvmrc` and compose build args, and Dependabot keeps them current. This depends on accepting a repo root build context for uv's single lock; if that is unwanted, pip-compile with per-package locks keeps topic 5's `additional_contexts` plan. Evidence: endoflife.date, PyPI and npm JSON, Docker Hub tags, uv Docker guide (all 2026-10-26).
 
 Recommendation updated (topics 5 and 7): was `python:3.12-slim` / `node:22-alpine`, pip, and per-service contexts with `additional_contexts`. Now Python 3.14-slim / Node 24-alpine, a uv workspace, and a repo root context with a strict `.dockerignore`. Reason: support windows (3.12 bugfix ended 2025-04, Node 22 Active ended 2026-10-20) and uv's single-lock workspace model.
+
+## 10. BrandList visual design
+
+### Findings
+- **How the current look was checked.** I compiled `frontend/scss/main.scss` with the repo's sass and wrote a static HTML mock that uses the TSX's class names, then screenshotted it in headless Chrome at 1200px. This is not the real React tree. Mobile widths are unverified, because headless Chrome clipped the 375px shot.
+- **Card order today.** The industry badge comes first. Then the name (h3, 1.1rem/600), then stars with the value and "(12 reviews)", then the excerpt (0.92rem, grey-700), then the top review (0.85rem, muted). Evidence: `frontend/src/brand-list/BrandCard.tsx:26-52`, `frontend/scss/components/_cards.scss:31-50`.
+- **Hierarchy: the lead is wrong.** The saturated category pill leads the card. The name is only 1.1rem. The rating row (stars 0.95rem, value 0.9rem) weighs the same as the excerpt, even though rating is the default sort (`-average_rating`). Evidence: `BrandCard.tsx:27-29`, `_stars.scss:7,22`, `docs/contracts/brandlist-mount.md`.
+- **Hierarchy: the top review blends in.** It is a run-on "Title: snippet" line in muted 0.85rem, with no label and no quote treatment, so it reads as more description. Evidence: `BrandCard.tsx:46-51`, `_brand-list.scss:74-78`.
+- **Hierarchy: cards don't line up.** A brand with no rating shows only "No reviews yet", and nothing aligns the card bottoms in the grid. Evidence: `BrandCard.tsx:34-35`, screenshot.
+- **Filter bar.** It is a bordered checkbox fieldset beside a stacked "Sort by" select. The two controls have different heights and styles and are bottom-aligned with `flex-end`. They stack into a column at ≤640px. Evidence: `_brand-list.scss:9-61`, `Controls.tsx:35-77`.
+- **Result count and heading.** The count exists only in a screen-reader live region (`States.tsx:70-77`). The visible heading is a generic "Results", which is also the focus target (`BrandList.tsx:50-52`).
+- **Search and Clear-all.** Neither is in R7 or the brandlist-mount contract; Clear exists only inside the Empty state (`SPEC.md:106-113`). Adding either is a change-spec question.
+- **Loading.** The skeleton is three identical static grey bars per card and does not match the card layout. Evidence: `States.tsx:7-22`, `_brand-list.scss:80-90`.
+- **Empty and error.** Both are a plain bordered box with one sentence and a button. Error adds an amber border and shows the raw `error.message`. Evidence: `States.tsx:25-67`, `_brand-list.scss:92-110`.
+- **Focus.** There is a 2px primary focus ring on the controls, the results and the heading. Buttons have no `:active` state. Reduced motion disables only the card transition. Evidence: `_brand-list.scss:112-157`.
+- **Tokens.** `$spacing` has no step 5, so 20px and 22px stay literal. Every font size is a literal (0.78, 0.85, 0.9, 0.92, 0.95, 1.1, 1.25 rem). Evidence: `frontend/scss/abstracts/_tokens.scss:56-68`, `reference/theme.css:99-136`.
+- **Contrast** (WCAG formula):
+  - All text pairs pass AA. Muted text is 4.83:1 on white and 4.51:1 on the page background; links are 5.47:1.
+  - Control borders using `--color-border` are 1.24:1, below the 3:1 that WCAG 1.4.11 requires for component boundaries. `--color-muted` gives 4.83:1.
+  - Stars (2.15:1) and the amber error border (2.15:1) are acceptable only because text carries the same information.
+  - Evidence: computed in python and spot-checked; `_brand-list.scss:29,54,109`.
+- **Card patterns elsewhere (secondary sources only).** Cards usually run title (the link), then metadata, a short summary, then an action. Review listings show a one-decimal score, stars, a count and a category. Trustpilot, G2, Capterra, Primer and shadcn could not be fetched directly. Sources: uxdesigninstitute.com/blog/card-design-for-ui (2025), dap.berkeley.edu/node/146.
+
+### Fit against priorities
+| Priority | How the options compare | Evidence |
+|---|---|---|
+| C1 | SCSS and TSX only, no new dependency | `frontend/package.json` |
+| P7 | Sass-only scales are easy to explain and leave the reference diff alone. Each new `--` property needs an allow-list entry. | `scripts/css-diff.mjs`, `_tokens.scss:56` |
+| P8 | Real gaps: control borders below 3:1, no visible count, a skeleton that doesn't match, raw error text | contrast figures above |
+| P9 | A token-driven type and spacing scale makes a new field or state a one-line change | n/a |
+| P10 | No new package or component file; one S/M issue | n/a |
+| P11 | The main levers: name and rating lead, aligned cards, one control height, a matching skeleton, designed empty and error states | screenshot |
+
+### Recommendation
+Build one S/M frontend issue that restyles inside the `brand-list__*` namespace, adds Sass-only scales and makes small TSX edits. The reference selectors and `:root` stay untouched, so the css-diff stays clean.
+
+**Tokens** (Sass-only, in `_tokens.scss`; no `:root` change):
+
+| Token | Value |
+|---|---|
+| `$spacing` step `5` | 20px |
+| `$font-size` | xs 0.78rem, sm 0.85rem, base 0.95rem, md 1.1rem, lg 1.25rem, xl 1.5rem, plus a `font-size()` function next to `space()` |
+| `$line-height-tight` | 1.3 |
+| `$control-height` | 40px |
+| `$focus-ring` | 2px solid `var(--color-primary)`, offset 2px |
+
+Literals that don't map to a step (0.92rem in `_cards.scss`) stay as they are.
+
+**Card**, in reading order: identity, score, blurb, evidence.
+1. Name first.
+2. Directly under it, a rating row: stars, the value at 1rem/700, and "(n reviews)" at 0.85rem muted. "No reviews yet" sits in the same row with a `min-height`, so rows align across cards.
+3. The industry badge moves below the rating, as a quiet label.
+4. The excerpt is clamped to 3 lines.
+5. The top review becomes a `brand-list__top-review` block: a 3px left rule, a small uppercase "Top review" label, then the title and the snippet. `margin-top: auto` pins it to the bottom, so card bottoms align.
+6. No whole-card link overlay, because the nested top-review link makes it hard to defend (P7).
+
+**Filter bar.**
+- One row on desktop that wraps only at 640px.
+- Checkbox rows and the select share `$control-height`, and their borders use `var(--color-muted)` (3:1 or better).
+- The native select chevron stays.
+- A visible count heading ("12 brands" / "No brands") replaces "Results". It keeps the ref and `tabIndex`, and the live region stays as it is.
+- At ≤640px the select goes full width and the options wrap in two columns.
+
+**States.**
+- **Loading:** the skeleton mirrors the card: name bar 60%, stars bar 40%, two excerpt lines and a badge pill. A pulse is optional and only inside `prefers-reduced-motion: no-preference`.
+- **Empty:** centered, with a title ("No brands match"), a muted line naming the active filters, and one primary "Clear filters" button.
+- **Error:** `role="alert"`, a 4px accent left border, a plain-language message without the raw `error.message`, and a primary Retry button.
+- **Buttons:** `min-height: 40px`, plus an `:active` state.
+
+Proposed R8 acceptance bullet: *"Visual: on desktop the name and rating lead each card. Cards in a row share a height and bottom alignment. Controls are at least 40px tall with a border of 3:1 or better. The loading skeleton matches the card layout. Empty and error states show a message and one primary action. A visible heading shows the result count. The PR includes screenshots at 375px and 1280px."*
+
+### Options considered
+| Option | For | Against |
+|---|---|---|
+| A. Restyle inside `brand-list__*` with Sass-only scales (recommended) | No reference-diff churn; one S/M issue | Can't restyle `.card` itself |
+| B. New `--` custom properties for the scales | Usable at runtime | An allow-list entry per token; a bigger diff |
+| C. Pulse skeleton | Looks more finished | Needs the motion guard; one more state to test |
+| D. Search and Clear-all in the bar | Like review-site UIs | Outside R7 and the contract; needs change-spec |
+| E. Whole-card link overlay | Bigger hit area | Nested-link complexity; hard to defend |
+
+### Risks
+- Reordering the card's DOM breaks the order assumptions in `BrandList.test.tsx` and `States.test.tsx`.
+- Changing the heading from "Results" to the count affects the tests and the parity of the server-rendered fallback (R16).
+- Any selector outside `brand-list__*`, `:focus-visible` and the reduced-motion block fails `scripts/css-diff.mjs`. A `.card .x` descendant counts as a new selector.
+- The line clamp hides text visually, though screen readers still read all of it. It's a choice to record.
+- Everything here was checked against a static mock, not the real render, and the mobile widths are unverified.
+
+### Open questions
+- Should this issue include the count heading and the demoted badge, given that the fallback markup (R16) may need to match?
+- A pulse on the skeleton, or a static one?
+- Search or a visible "Clear all" in the bar? That would go through change-spec.
+- Should the error state show `error.message` at all?
+
+### Follow-ups
