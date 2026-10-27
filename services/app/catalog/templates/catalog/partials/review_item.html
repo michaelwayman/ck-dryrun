@@ -1,0 +1,16 @@
+{% load catalog_tags %}<article class="review-item">
+  <div class="review-head">
+    <h3>
+      {% if show_brand %}<span class="meta"><a href="{% url 'catalog:brand-detail' review.brand.slug %}">{{ review.brand.name }}</a></span><br>{% endif %}
+      <a href="{% url 'catalog:review-detail' review.slug %}">{{ review.title }}</a>
+    </h3>
+    <div>{% stars review.rating False %}</div>
+  </div>
+  <div class="review-byline">
+    {{ review.reviewer_name }}{% if review.reviewer_location %}, {{ review.reviewer_location }}{% endif %}
+    &middot; <time datetime="{{ review.published_at|date:'c' }}">{{ review.published_at|date:"M j, Y" }}</time>
+  </div>
+  <div class="review-body">
+    {% if excerpt %}{{ review.content|snippet:40 }}{% else %}{{ review.content|sanitize_html }}{% endif %}
+  </div>
+</article>
