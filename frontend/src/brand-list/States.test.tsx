@@ -17,7 +17,7 @@ const PAGE_9_REQUEST =
   "/api/brands/?ordering=-average_rating&page=9&page_size=12";
 
 const results = () => document.querySelector(".brand-list__results")!;
-const heading = () => screen.getByRole("heading", { name: "Results" });
+const heading = () => screen.getByRole("heading", { level: 2 });
 const liveRegion = () => document.querySelector("[aria-live=polite]")!;
 
 function countRequests(apiRequest: string) {
@@ -36,6 +36,10 @@ describe("<BrandList /> states", () => {
 
     expect(results().getAttribute("aria-busy")).toBe("true");
     expect(results().querySelectorAll(".card")).toHaveLength(3);
+    expect(
+      results().querySelector(".brand-list__skeleton-line--title"),
+    ).toBeTruthy();
+    expect(heading().textContent).toBe("Brands");
     expect(liveRegion().textContent).toBe("");
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -47,9 +51,15 @@ describe("<BrandList /> states", () => {
     await screen.findAllByRole("article");
     expect(results().getAttribute("aria-busy")).toBe("false");
     expect(liveRegion().textContent).toBe("5 brands found.");
+    expect(heading().textContent).toBe("5 brands");
     expect(
       screen.getByRole("img", { name: "Rated 3.9 out of 5" }),
     ).toBeTruthy();
+    // The name leads, then the rating row, then the industry badge.
+    const card = screen.getAllByRole("article")[0]!;
+    const parts = [...card.children].map((el) => el.className || el.tagName);
+    expect(parts.slice(0, 3)).toEqual(["H3", "brand-list__rating", "DIV"]);
+    expect(card.children[2]!.querySelector(".badge")).toBeTruthy();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -64,6 +74,7 @@ describe("<BrandList /> states", () => {
       await screen.findByText("No brands match these filters."),
     ).toBeTruthy();
     expect(liveRegion().textContent).toBe("0 brands found.");
+    expect(heading().textContent).toBe("No brands");
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Clear filters" }));
@@ -90,7 +101,8 @@ describe("<BrandList /> states", () => {
     const { container } = render(<BrandList config={CONFIG} />);
 
     const alert = await screen.findByRole("alert");
-    expect(alert.textContent).toContain("Page out of range.");
+    expect(alert.textContent).toContain("That page of brands doesn't exist.");
+    expect(alert.textContent).not.toContain("Page out of range.");
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Retry" }));
@@ -117,9 +129,9 @@ describe("<BrandList /> states", () => {
     server.use(http.get("*/api/brands/", () => HttpResponse.text("<html>")));
     render(<BrandList config={CONFIG} />);
 
-    expect((await screen.findByRole("alert")).textContent).toContain(
-      "could not be read",
-    );
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("The brands couldn't be loaded.");
+    expect(alert.textContent).not.toContain("could not be read");
   });
 
   it("brands without reviews say so instead of showing stars", async () => {
@@ -183,8 +195,6 @@ describe("<BrandList /> by keyboard", () => {
 
     await user.keyboard("{Enter}");
     expect(window.location.search).toContain("page=2");
-    expect(document.activeElement).toBe(
-      screen.getByRole("heading", { name: "Results" }),
-    );
+    expect(document.activeElement).toBe(heading());
   });
 });

@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react";
 import { BrandCard } from "./BrandCard";
 import { Filters, Pager, Sort } from "./Controls";
-import { Empty, ErrorState, LiveRegion, Loading } from "./States";
+import { brandCount, Empty, ErrorState, LiveRegion, Loading } from "./States";
 import type { MountConfig } from "./types";
 import { useBrandList } from "./useBrandList";
 import { hrefFor, useUrlState } from "./url-state";
@@ -33,6 +33,14 @@ export function BrandList({ config }: { config: MountConfig }) {
     }
   }, [result.status]);
 
+  // The visible count; "Brands" while it's unknown. The heading stays the focus target.
+  const title =
+    result.status !== "success"
+      ? "Brands"
+      : result.data.count === 0
+        ? "No brands"
+        : brandCount(result.data.count);
+
   return (
     <div className="brand-list">
       <div className="brand-list__controls">
@@ -47,7 +55,7 @@ export function BrandList({ config }: { config: MountConfig }) {
         />
       </div>
       <h2 className="brand-list__heading" ref={heading} tabIndex={-1}>
-        Results
+        {title}
       </h2>
       <LiveRegion
         count={result.status === "success" ? result.data.count : null}
