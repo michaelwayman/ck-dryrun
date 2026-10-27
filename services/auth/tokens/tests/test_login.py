@@ -1,10 +1,10 @@
 import jwt
 import pytest
+from accounts.models import User
 from django.db import OperationalError
 from django.test import Client
 from tokenauth import verify_token
 
-from accounts.models import User
 from tokens.models import RefreshToken
 from tokens.tests.conftest import contract_example, make_user, verifier_config
 
@@ -27,7 +27,8 @@ def test_login_ok_matches_the_contract() -> None:
     assert response["Cache-Control"] == "no-store"
     body = response.json()
     assert set(body) == set(example["response"]["body"])
-    assert body["token_type"] == "Bearer" and body["expires_in"] == 600
+    assert body["token_type"] == "Bearer"  # noqa: S105 (not a password)
+    assert body["expires_in"] == 600
     claims = verify_token(body["access"], verifier_config())
     assert claims.username == "admin" and [r.value for r in claims.roles] == ["editor"]
     header = jwt.get_unverified_header(body["access"])

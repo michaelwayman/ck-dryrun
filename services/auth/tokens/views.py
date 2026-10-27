@@ -1,5 +1,6 @@
 from typing import Any
 
+from accounts.models import User
 from django.contrib.auth import authenticate
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiResponse, extend_schema
@@ -8,7 +9,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from accounts.models import User
 from tokens import refresh
 from tokens.errors import InvalidCredentials, InvalidRefresh
 from tokens.serializers import (
@@ -40,6 +40,8 @@ class TokenView(APIView):
 
 
 class LoginView(TokenView):
+    """Exchange a username and password for an access token and a refresh token."""
+
     @extend_schema(
         operation_id="login",
         request=LoginSerializer,
@@ -60,6 +62,8 @@ class LoginView(TokenView):
 
 
 class RefreshView(TokenView):
+    """Exchange a refresh token for a new pair; the old refresh token is rotated out."""
+
     @extend_schema(
         operation_id="refresh",
         request=RefreshSerializer,
@@ -76,6 +80,8 @@ class RefreshView(TokenView):
 
 
 class LogoutView(TokenView):
+    """Revoke a refresh token. Idempotent: unknown or already revoked tokens also give 204."""
+
     @extend_schema(
         operation_id="logout",
         request=RefreshSerializer,

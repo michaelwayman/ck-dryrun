@@ -3,16 +3,16 @@ from datetime import UTC, datetime
 import jwt
 import pytest
 from django.test import Client
+from tokens.signing import mint_access_token
 
 from accounts.models import Role, User
-from tokens.signing import mint_access_token
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
 def superuser_client() -> Client:
-    admin = User.objects.create_superuser("root", password="pw")
+    admin = User.objects.create_superuser("root", password="pw")  # noqa: S106 (test-only)
     client = Client()
     client.force_login(admin)
     return client

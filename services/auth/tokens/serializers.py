@@ -41,7 +41,8 @@ class TokenPairSerializer(serializers.Serializer[None]):
 class ErrorDetailSerializer(serializers.Serializer[None]):
     code = serializers.CharField()
     message = serializers.CharField()
-    fields = serializers.DictField(
+    # The metaclass pops declared fields, so this doesn't replace Serializer.fields at runtime.
+    fields = serializers.DictField(  # type: ignore[assignment]
         child=serializers.ListField(child=serializers.CharField()), allow_null=True
     )
 

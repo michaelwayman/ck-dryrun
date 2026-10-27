@@ -2,11 +2,11 @@ from datetime import timedelta
 from typing import Any
 
 import pytest
+from accounts.models import Role, User
 from django.test import Client
 from django.utils import timezone
 from tokenauth import verify_token
 
-from accounts.models import Role, User
 from tokens.models import RefreshToken
 from tokens.tests.conftest import contract_example, make_user, verifier_config
 
@@ -18,7 +18,9 @@ def post(client: Client, path: str, body: Any) -> Any:
 
 
 def login(client: Client) -> dict[str, Any]:
-    body: dict[str, Any] = post(client, "/api/token/", {"username": "admin", "password": "admin"}).json()
+    body: dict[str, Any] = post(
+        client, "/api/token/", {"username": "admin", "password": "admin"}
+    ).json()
     return body
 
 
@@ -95,7 +97,10 @@ def test_logout_revokes_and_is_idempotent(client: Client, admin: User) -> None:
     logged_out = post(client, "/api/token/refresh/", {"refresh": token})
     assert logged_out.status_code == 401
     # Logout alone revokes one token, not the family.
-    assert post(client, "/api/token/refresh/", {"refresh": login(client)["refresh"]}).status_code == 200
+    assert (
+        post(client, "/api/token/refresh/", {"refresh": login(client)["refresh"]}).status_code
+        == 200
+    )
 
 
 @pytest.mark.parametrize("path", ["/api/token/refresh/", "/api/token/logout/"])

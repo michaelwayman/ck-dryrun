@@ -7,13 +7,12 @@ from functools import cache
 from pathlib import Path
 
 import jwt
+from accounts.models import User
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from tokenauth import CLAIMS_VERSION
-
-from accounts.models import User
 
 
 @dataclass(frozen=True)

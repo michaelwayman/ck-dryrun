@@ -4,10 +4,10 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 
+from accounts.models import User
 from django.conf import settings
 from django.db import transaction
 
-from accounts.models import User
 from tokens.models import RefreshToken
 
 
@@ -32,7 +32,7 @@ def issue(user: User, now: datetime) -> str:
 
 
 def rotate(raw: str, now: datetime) -> tuple[User, str]:
-    """Spend `raw` and return its user with a new token. Replaying a spent token revokes them all."""
+    """Spend `raw`; return its user and a new token. Replaying a spent token revokes them all."""
     with transaction.atomic():
         token = (
             RefreshToken.objects.select_for_update()

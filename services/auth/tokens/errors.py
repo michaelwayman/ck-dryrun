@@ -43,5 +43,7 @@ def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | Non
     response = drf_exception_handler(exc, context)
     if response is not None and isinstance(exc, exceptions.APIException):
         code = exc.get_codes()
-        response.data = error_body(code if isinstance(code, str) else exc.default_code, str(exc.detail))
+        response.data = error_body(
+            code if isinstance(code, str) else exc.default_code, str(exc.detail)
+        )
     return response

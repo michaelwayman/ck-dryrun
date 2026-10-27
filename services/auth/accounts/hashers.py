@@ -34,9 +34,11 @@ class WPBcryptPasswordHasher(BasePasswordHasher):
             return False
 
     def encode(self, password: str, salt: str) -> str:
-        raise NotImplementedError("wp_bcrypt only verifies imported hashes; it never makes new ones.")
+        raise NotImplementedError(
+            "wp_bcrypt only verifies imported hashes; it never makes new ones."
+        )
 
-    def safe_summary(self, encoded: str) -> dict[str, Any]:
+    def safe_summary(self, encoded: str) -> dict[Any, Any]:
         bcrypt_hash = self._bcrypt_hash(encoded) or ""
         return {_("algorithm"): self.algorithm, _("hash"): mask_hash(bcrypt_hash)}
 

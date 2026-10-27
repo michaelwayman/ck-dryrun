@@ -13,7 +13,12 @@ from accounts.models import Role, User
 pytestmark = pytest.mark.django_db
 
 FIXTURE = (
-    Path(__file__).resolve().parents[4] / "docs" / "contracts" / "wp-source" / "mock" / "fixture.sql"
+    Path(__file__).resolve().parents[4]
+    / "docs"
+    / "contracts"
+    / "wp-source"
+    / "mock"
+    / "fixture.sql"
 )
 
 

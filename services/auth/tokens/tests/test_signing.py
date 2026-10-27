@@ -3,13 +3,13 @@ from pathlib import Path
 
 import jwt
 import pytest
+from accounts.models import User
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from django.core.exceptions import ImproperlyConfigured
 from pytest_django.fixtures import Settings
 from tokenauth import Role, verify_token
 
-from accounts.models import User
 from tokens.signing import derive_kid, mint_access_token, signing_key
 from tokens.tests.conftest import CONTRACTS, contract_example, make_user, verifier_config
 

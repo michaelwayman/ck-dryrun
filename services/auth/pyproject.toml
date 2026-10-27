@@ -37,9 +37,9 @@ plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 check_untyped_defs = true
 files = ["config", "accounts", "tokens", "tests"]
 
-# django-environ, PyMySQL, drf-spectacular and jsonschema's referencing ship no usable hints here.
+# django-environ, PyMySQL, drf-spectacular and jsonschema ship no type hints.
 [[tool.mypy.overrides]]
-module = ["environ", "pymysql", "pymysql.*", "drf_spectacular.*"]
+module = ["environ", "pymysql", "pymysql.*", "drf_spectacular.*", "jsonschema"]
 ignore_missing_imports = true
 
 [tool.django-stubs]
