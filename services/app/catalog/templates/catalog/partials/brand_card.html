@@ -1,0 +1,7 @@
+{% load catalog_tags %}<article class="card">
+  <div><span class="badge">{{ brand.industry.name }}</span></div>
+  <h3><a href="{% url 'catalog:brand-detail' brand.slug %}">{{ brand.name }}</a></h3>
+  <div>{% stars brand.average_rating %} <span class="meta">({{ brand.review_count }})</span></div>
+  {% if brand.headquarters %}<p class="meta">{{ brand.headquarters }}</p>{% endif %}
+  {% if brand.short_description %}<p class="excerpt">{{ brand.short_description }}</p>{% endif %}
+</article>

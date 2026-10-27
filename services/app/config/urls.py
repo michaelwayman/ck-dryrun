@@ -5,4 +5,5 @@ from config import views
 urlpatterns = [
     path("healthz", views.healthz, name="healthz"),
     path("api/", include("api.urls")),
+    path("", include("catalog.urls")),
 ]

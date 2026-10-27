@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load catalog_tags %}
+
+{% block title %}{{ review.title }} | {{ review.brand.name }}{% endblock %}
+
+{% block content %}
+<section class="review-hero">
+  <div class="container">
+    <div class="brand-link"><a href="{% url 'catalog:brand-detail' review.brand.slug %}">&larr; {{ review.brand.name }}</a></div>
+    <h1>{{ review.title }}</h1>
+    <div>{% stars review.rating %}</div>
+    <div class="review-byline">
+      {{ review.reviewer_name }}{% if review.reviewer_location %}, {{ review.reviewer_location }}{% endif %}
+      &middot; <time datetime="{{ review.published_at|date:'c' }}">{{ review.published_at|date:"F j, Y" }}</time>
+    </div>
+  </div>
+</section>
+
+<section class="brand-body">
+  <div class="container">
+    <div class="content">{{ review.content|sanitize_html }}</div>
+  </div>
+</section>
+{% endblock %}

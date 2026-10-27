@@ -32,10 +32,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves /static/ from gunicorn, ahead of everything else that could touch the request.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
 
-# App templates only for now: drf-spectacular's Swagger UI page at /api/docs/.
+# App templates: the catalog pages (and 404.html), plus drf-spectacular's Swagger UI at /api/docs/.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -60,6 +62,18 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# The frontend build (css/main.css, brandlist/brand-list.js); the Dockerfile copies it here.
+STATICFILES_DIRS = [BASE_DIR / "static"]
+# Hashed, compressed names need `collectstatic` (the image runs it), so debug runs and tests
+# keep the plain storage and serve straight from STATICFILES_DIRS (brandlist-mount, Assets).
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"
+        if DEBUG
+        else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

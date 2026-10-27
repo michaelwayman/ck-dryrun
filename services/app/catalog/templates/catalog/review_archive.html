@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}All Reviews | Brand Reviews Challenge{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>All Reviews</h1>
+    <p>Honest customer feedback from real users.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    {% for review in page %}
+      {% include "catalog/partials/review_item.html" with show_brand=True excerpt=True %}
+    {% empty %}
+      <p class="meta">No reviews yet.</p>
+    {% endfor %}
+    {% include "catalog/partials/pagination.html" with label="Review pages" %}
+  </div>
+</section>
+{% endblock %}

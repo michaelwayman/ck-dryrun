@@ -1,0 +1,5 @@
+{% if pages|length > 1 %}<nav class="pagination" aria-label="{{ label }}">
+  {% if previous_url %}<a class="prev page-numbers" href="{{ previous_url }}">Previous</a>{% endif %}
+  {% for p in pages %}{% if p.current %}<span class="page-numbers current" aria-current="page">{{ p.number }}</span>{% else %}<a class="page-numbers" href="{{ p.url }}">{{ p.number }}</a>{% endif %}
+  {% endfor %}{% if next_url %}<a class="next page-numbers" href="{{ next_url }}">Next</a>{% endif %}
+</nav>{% endif %}
