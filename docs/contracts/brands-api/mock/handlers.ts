@@ -55,14 +55,16 @@ function searchKey(params: URLSearchParams): string {
   return queryKey(query);
 }
 
-// Does the request match the example's method, path, query, Authorization header and JSON body?
+// Does the request match the example's method, path, query, headers and JSON body?
 async function matches(request: Request, ex: Example["request"]) {
   const url = new URL(request.url);
   if (request.method !== ex.method || url.pathname !== ex.path) return false;
   if (searchKey(url.searchParams) !== queryKey(ex.query ?? {})) return false;
   if (ex.method === "GET") return true;
-  const auth = request.headers.get("Authorization") ?? undefined;
-  if (auth !== ex.headers?.Authorization) return false;
+  for (const name of ["Authorization", "Content-Type"]) {
+    if ((request.headers.get(name) ?? undefined) !== ex.headers?.[name])
+      return false;
+  }
   try {
     return canonical(await request.clone().json()) === canonical(ex.body);
   } catch {

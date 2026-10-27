@@ -64,4 +64,12 @@ describe("brands-api mock", () => {
     await expect(fetch(`${ORIGIN}/api/brands/?page=2`)).rejects.toThrow();
     expect(unhandled).toEqual([`${ORIGIN}/api/brands/?page=2`]);
   });
+
+  it("leaves a PATCH with a token no example uses unhandled", async () => {
+    const [url, init] = toFetch(examples["patch-ok.json"]!);
+    const headers = { ...init.headers, Authorization: "Bearer other" };
+
+    await expect(fetch(url, { ...init, headers })).rejects.toThrow();
+    expect(unhandled).toContain(url);
+  });
 });
