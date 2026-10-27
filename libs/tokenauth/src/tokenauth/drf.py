@@ -13,6 +13,8 @@ from tokenauth.claims import Claims, Role, VerifierConfig
 from tokenauth.errors import TokenError
 from tokenauth.verify import verify_token
 
+# Set on the request by authenticate() so authenticate_header() can name the error.
+_REJECTED_ATTR = "_tokenauth_rejected"
 _MESSAGES = {
     "expired": "Token has expired.",
     "malformed_header": "Authorization header must be 'Bearer <token>'.",
@@ -42,18 +44,21 @@ class BearerTokenAuthentication(BaseAuthentication):
         if not parts or parts[0].lower() != self.keyword.lower().encode():
             return None  # no header, or another scheme: anonymous
         if len(parts) != 2:
-            raise _invalid("malformed_header")
+            raise _invalid(request, "malformed_header")
         try:
             token = parts[1].decode("ascii")
         except UnicodeDecodeError:
-            raise _invalid("malformed_header") from None
+            raise _invalid(request, "malformed_header") from None
         try:
             claims = verify_token(token, _config())
         except TokenError as exc:
-            raise _invalid(exc.code) from None
+            raise _invalid(request, exc.code) from None
         return TokenUser(claims), claims
 
     def authenticate_header(self, request: Request) -> str:
+        # RFC 6750: name the error only when this request's token was rejected (shared-lib, #61).
+        if getattr(request, _REJECTED_ATTR, False):
+            return f'{self.keyword} error="invalid_token"'
         return self.keyword
 
 
@@ -81,5 +86,6 @@ def _config() -> VerifierConfig:
     )
 
 
-def _invalid(reason: str) -> AuthenticationFailed:
+def _invalid(request: Request, reason: str) -> AuthenticationFailed:
+    setattr(request, _REJECTED_ATTR, True)
     return AuthenticationFailed(_MESSAGES.get(reason, "Invalid token."), code="invalid_token")
