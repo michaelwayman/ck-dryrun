@@ -92,12 +92,17 @@ def _claims(payload: dict[str, Any], config: VerifierConfig, now: datetime) -> C
     if version not in SUPPORTED_VERSIONS:
         raise UnsupportedVersion(f"claims version {version} is not supported")
 
+    try:
+        issued_at, expires_at = datetime.fromtimestamp(iat, UTC), datetime.fromtimestamp(exp, UTC)
+    except OverflowError, OSError, ValueError:
+        raise MalformedToken("iat or exp is out of range") from None
+
     return Claims(
         sub=sub,
         username=username,
         roles=frozenset(Role(r) for r in roles if isinstance(r, str) and r in _ROLE_VALUES),
-        issued_at=datetime.fromtimestamp(iat, UTC),
-        expires_at=datetime.fromtimestamp(exp, UTC),
+        issued_at=issued_at,
+        expires_at=expires_at,
         version=version,
     )
 

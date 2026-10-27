@@ -131,6 +131,7 @@ def test_clock_defaults_to_now(config: VerifierConfig) -> None:
         sign(editor_payload(iat=True)),
         sign(editor_payload(sub=1)),
         sign(editor_payload(roles="editor")),
+        sign(editor_payload(exp=10**20)),
     ],
 )
 def test_malformed(token: str, config: VerifierConfig) -> None:
