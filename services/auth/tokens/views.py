@@ -74,11 +74,14 @@ class RefreshView(TokenView):
     def post(self, request: Request) -> Response:
         body = RefreshSerializer(data=request.data)
         body.is_valid(raise_exception=True)
+        now = timezone.now()
         try:
-            user, new_refresh = refresh.rotate(body.validated_data["refresh"], timezone.now())
+            access, new_refresh = refresh.rotate(
+                body.validated_data["refresh"], now, lambda user: mint_access_token(user, now)
+            )
         except refresh.InvalidRefreshToken:
             raise InvalidRefresh from None
-        return self.token_pair(mint_access_token(user, timezone.now()), new_refresh)
+        return self.token_pair(access, new_refresh)
 
 
 class LogoutView(TokenView):
