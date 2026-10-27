@@ -31,8 +31,8 @@ A compact JWS (RFC 7519), signed with Ed25519.
 ## Verification rules (all required)
 1. Decode the header. Look up the public key by `kid` in the configured key set. If none matches, the error is `unknown_key`.
 2. Verify the signature with `algorithms=["EdDSA"]`, pinned. The `alg` in the header is never trusted.
-3. Require `iss`, `aud`, `sub`, `exp`, `iat`, `v` and `roles`. Any missing claim gives `missing_claim`.
-4. Check `iss` and `aud`. Check `exp` with 30 s leeway (otherwise `expired`). Reject an `iat` more than 30 s in the future.
+3. Require `iss`, `aud`, `sub`, `username`, `exp`, `iat`, `v` and `roles`. Any missing claim gives `missing_claim`. A claim of the wrong type gives `malformed`.
+4. Check `iss` and `aud`; `aud` must be a single string, and a list gives `invalid_audience`. Check `exp` with 30 s leeway (otherwise `expired`). Reject an `iat` more than 30 s in the future with `malformed`.
 5. Check that `v` is in the supported set, which is `{1}` for library 1.x.
 
 ## Keys
