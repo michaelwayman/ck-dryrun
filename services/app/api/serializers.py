@@ -42,3 +42,18 @@ class BrandCardSerializer(serializers.Serializer[Brand]):
     @extend_schema_field(serializers.FloatField(allow_null=True, min_value=1, max_value=5))
     def get_average_rating(self, brand: Brand) -> float | None:
         return brand.average_rating
+
+
+class StrictCharField(serializers.CharField):
+    """A CharField that refuses numbers and booleans instead of converting them to text."""
+
+    default_error_messages = {"invalid": "Must be a string."}
+
+    def to_internal_value(self, data: object) -> str:
+        if not isinstance(data, str):
+            self.fail("invalid")
+        return super().to_internal_value(data)
+
+
+class ShortDescriptionSerializer(serializers.Serializer[Brand]):
+    short_description = StrictCharField(max_length=500, allow_blank=True, trim_whitespace=True)
