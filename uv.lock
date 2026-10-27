@@ -16,7 +16,7 @@ members = [
 [manifest.dependency-groups]
 dev = [
     { name = "django-stubs", extras = ["compatible-mypy"], specifier = ">=6.1,<7" },
-    { name = "djangorestframework-stubs", extras = ["compatible-mypy"], specifier = ">=3.18,<4" },
+    { name = "djangorestframework-stubs", extras = ["compatible-mypy"], specifier = ">=3.18.1,<4" },
     { name = "jsonschema", specifier = ">=4.26,<5" },
     { name = "mypy", specifier = ">=2.3,<2.4" },
     { name = "pytest", specifier = ">=9.1,<10" },
