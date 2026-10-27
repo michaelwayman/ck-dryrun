@@ -1,0 +1,11 @@
+@use "sass:map";
+@use "tokens";
+
+// A step of the spacing scale, e.g. `space(6)` is 24px.
+@function space($step) {
+  @if not map.has-key(tokens.$spacing, $step) {
+    @error "Unknown spacing step `#{$step}`.";
+  }
+
+  @return map.get(tokens.$spacing, $step);
+}

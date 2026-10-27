@@ -1,0 +1,6 @@
+@use "../abstracts" as *;
+
+:root {
+  @include custom-properties($reference-tokens);
+  @include custom-properties($theme-tokens);
+}
