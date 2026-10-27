@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load catalog_tags %}
+
+{% block title %}{{ brand.seo_title|default:brand.name }}{% endblock %}
+{% block meta_description %}{% if brand.seo_description %}<meta name="description" content="{{ brand.seo_description }}">{% endif %}{% endblock %}
+
+{% block content %}
+<section class="brand-hero">
+  <div class="container">
+    <div><span class="badge">{{ brand.industry.name }}</span></div>
+    <h1>{{ brand.name }}</h1>
+    <div>{% stars brand.average_rating %} <span class="meta">({{ brand.review_count }} review{{ brand.review_count|pluralize }})</span></div>
+    <div class="brand-meta">
+      {% if brand.headquarters %}<div><strong>HQ:</strong> {{ brand.headquarters }}</div>{% endif %}
+      {% if brand.founded_year %}<div><strong>Founded:</strong> {{ brand.founded_year }}</div>{% endif %}
+      {% if brand.website_url %}<div><strong>Website:</strong> <a href="{{ brand.website_url }}" rel="nofollow noopener" target="_blank">{{ brand.website_url|url_host }}</a></div>{% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="brand-body">
+  <div class="container">
+    <div class="content">{{ brand.content|sanitize_html }}</div>
+  </div>
+</section>
+
+<section class="reviews-section">
+  <div class="container">
+    <h2>Customer Reviews</h2>
+    {% for review in reviews %}
+      {% include "catalog/partials/review_item.html" %}
+    {% empty %}
+      <p class="meta">No reviews yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
