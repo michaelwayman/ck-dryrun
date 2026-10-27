@@ -150,6 +150,18 @@ def test_brand_page_without_seo_fields_or_reviews(client: Client) -> None:
     assert "Website:" not in html
 
 
+@pytest.mark.parametrize("url", ["javascript:alert(1)", "http://[bad"])
+def test_brand_page_shows_an_unsafe_or_malformed_website_as_text(client: Client, url: str) -> None:
+    factories.brand(slug="odd", website_url=url)
+
+    response = client.get("/brand/odd/")
+
+    html = response.content.decode()
+    assert response.status_code == 200
+    assert f"<strong>Website:</strong> {url}</div>" in html
+    assert "<a href=" not in html.split('class="brand-meta"', 1)[1].split("</section>", 1)[0]
+
+
 @pytest.mark.parametrize("slug", ["missing", "inactive"])
 def test_brand_page_404s_for_unknown_or_inactive(client: Client, slug: str) -> None:
     factories.brand(slug="inactive", is_active=False)
