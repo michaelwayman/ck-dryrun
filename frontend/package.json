@@ -8,7 +8,11 @@
   "//": [
     "typescript ~6.0: typescript-eslint 8.72 peers typescript >=4.8.4 <6.1.0, so 7.x is excluded.",
     "eslint and @eslint/js ^9: eslint-plugin-jsx-a11y 6.10.2 peers eslint up to ^9, so 10.x is excluded.",
-    "msw ^3.0.3: peers vite >=6, typescript >=5.9 (both optional, both met); graphql is an optional peer and not needed; engines node >=22.12."
+    "msw ^3.0.3: peers vite >=6, typescript >=5.9 (both optional, both met); graphql is an optional peer and not needed; engines node >=22.12.",
+    "@testing-library/react ^16.3: peers react, react-dom, @types/react and @types/react-dom ^18 || ^19 and @testing-library/dom ^10 (all met).",
+    "@testing-library/dom ^10.4: no peers; pinned to the major @testing-library/react 16 peers.",
+    "@testing-library/user-event ^14.6: peers @testing-library/dom >=7.21.4 (met).",
+    "vitest-axe ^0.1.0: the last stable release (1.0 is still pre-release); peers vitest >=0.16 (met). Its type augmentation targets the old Vi namespace, so test-server.ts declares the matcher on vitest's Matchers."
   ],
   "scripts": {
     "build": "vite build",
@@ -26,6 +30,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
@@ -34,8 +41,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.13.0",
     "jsdom": "^30.1.3",
-    "postcss": "^8.5.32",
     "msw": "^3.0.3",
+    "postcss": "^8.5.32",
     "prettier": "^3.9.10",
     "sass": "^1.106.1",
     "stylelint": "^17.16.0",
@@ -43,6 +50,7 @@
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "vitest-axe": "^0.1.0"
   }
 }
