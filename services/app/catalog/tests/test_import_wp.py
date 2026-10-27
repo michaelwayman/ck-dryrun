@@ -187,6 +187,48 @@ def test_zero_brands_on_an_empty_db_writes_nothing(wp: sqlite3.Connection) -> No
     assert not Industry.objects.exists()
 
 
+def test_every_brand_skipped_aborts_without_writing(wp: sqlite3.Connection) -> None:
+    wp.execute("DELETE FROM wp_term_relationships")
+
+    with pytest.raises(CommandError, match="Every WP brand was skipped"):
+        run()
+
+    assert not Industry.objects.exists()
+    assert not Brand.all_objects.exists()
+
+
+@pytest.mark.parametrize("year", ["32768", "-5"])
+def test_an_out_of_range_founded_year_is_stored_as_null(
+    wp: sqlite3.Connection, caplog: pytest.LogCaptureFixture, year: str
+) -> None:
+    wp.execute(
+        "UPDATE wp_postmeta SET meta_value = ? WHERE post_id = 101 AND meta_key = 'founded_year'",
+        (year,),
+    )
+
+    with caplog.at_level(logging.WARNING, logger="catalog.importer"):
+        assert run() == FIRST_RUN
+
+    assert Brand.objects.get(wp_id=101).founded_year is None
+    assert any("Brand 101" in w and "founded_year" in w for w in caplog.messages)
+
+
+def test_an_over_long_website_url_is_stored_as_blank(
+    wp: sqlite3.Connection, caplog: pytest.LogCaptureFixture
+) -> None:
+    url = "https://alpha-mock.example.com/" + "a" * 2048
+    wp.execute(
+        "UPDATE wp_postmeta SET meta_value = ? WHERE post_id = 101 AND meta_key = 'website_url'",
+        (url,),
+    )
+
+    with caplog.at_level(logging.WARNING, logger="catalog.importer"):
+        assert run() == FIRST_RUN
+
+    assert Brand.objects.get(wp_id=101).website_url == ""
+    assert any("Brand 101" in w and "website_url" in w for w in caplog.messages)
+
+
 def test_a_failure_mid_run_rolls_everything_back(
     wp: sqlite3.Connection, monkeypatch: pytest.MonkeyPatch
 ) -> None:

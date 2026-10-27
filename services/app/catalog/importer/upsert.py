@@ -12,6 +12,9 @@ from catalog.importer.source import PostRow, Source
 from catalog.models import Brand, Industry, Review
 from catalog.text import first_paragraph_text
 
+MAX_FOUNDED_YEAR = 32767  # PositiveSmallIntegerField's upper bound on every Django backend
+MAX_WEBSITE_URL = 2048  # Brand.website_url max_length
+
 log = logging.getLogger("catalog.importer")
 
 
@@ -68,6 +71,9 @@ def _brands(source: Source, industries: dict[int, int]) -> tuple[dict[int, int],
         current = existing.get(row.wp_id)
         fields = _brand_fields(row, industries[industry_ids[0]], current)
         seen[row.wp_id] = _save(Brand, current, fields, row.wp_id, counts).pk
+    if not seen:
+        # Raised inside the transaction, so the industries written above roll back too.
+        raise CommandError("Every WP brand was skipped; aborting without writing anything.")
     counts.deactivated = _deactivate(Brand, seen)
     return seen, counts
 
@@ -84,8 +90,8 @@ def _brand_fields(row: PostRow, industry_pk: int, current: Brand | None) -> dict
         "industry_id": industry_pk,
         "content": row.content,
         "short_description": short_description,
-        "website_url": meta.get("website_url", ""),
-        "founded_year": _int_or_none(meta.get("founded_year", ""), row, "founded_year"),
+        "website_url": _website_url(meta.get("website_url", ""), row),
+        "founded_year": _founded_year(meta.get("founded_year", ""), row),
         "headquarters": meta.get("headquarters", ""),
         "legacy_average_rating": _rating_or_none(meta.get("average_rating", ""), row),
         "seo_title": meta.get("_yoast_wpseo_title", ""),
@@ -162,6 +168,27 @@ def _int_or_none(value: str, row: PostRow, key: str) -> int | None:
     except ValueError:
         log.warning("Post %d (%s): meta %s %r is not an integer.", row.wp_id, row.slug, key, value)
         return None
+
+
+def _founded_year(value: str, row: PostRow) -> int | None:
+    year = _int_or_none(value, row, "founded_year")
+    if year is not None and not 0 <= year <= MAX_FOUNDED_YEAR:
+        log.warning(
+            "Brand %d (%s): founded_year %d is out of range; storing null.",
+            row.wp_id, row.slug, year,
+        )  # fmt: skip
+        return None
+    return year
+
+
+def _website_url(value: str, row: PostRow) -> str:
+    if len(value) > MAX_WEBSITE_URL:
+        log.warning(
+            "Brand %d (%s): website_url is %d characters (max %d); storing \"\".",
+            row.wp_id, row.slug, len(value), MAX_WEBSITE_URL,
+        )  # fmt: skip
+        return ""
+    return value
 
 
 def _rating_or_none(value: str, row: PostRow) -> Decimal | None:
