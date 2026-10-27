@@ -63,7 +63,7 @@ plus one log line each for review 202 (unknown brand `9999`) and review 203 (rat
 | Industry | 1 | name `Mock Insurance`, slug `ins-mock` |
 | Industry | 2 | name `Mock Banking`, slug `bank-mock` |
 | Brand | 101 | name `Alpha Mock Co.`, slug `alpha-mock`, industry 1, short_description `Alpha Mock Co. is a synthetic insurer.`, website_url `https://alpha-mock.example.com`, founded_year `1990`, headquarters `Springfield, ZZ`, legacy_average_rating `4.5`, seo_title `Alpha Mock Co. Reviews`, seo_description `Synthetic reviews of Alpha Mock Co.` |
-| Brand | 102 | name `Beta & Sons`, slug `beta-and-sons`, industry 2, short_description is the first `<p>` tag-stripped (`Beta &amp; Sons is a synthetic bank.`; the contract doesn't say whether entities are decoded), website_url `""`, founded_year null, headquarters `Shelbyville, ZZ`, legacy_average_rating null, seo_title `""`, seo_description `""` |
+| Brand | 102 | name `Beta & Sons`, slug `beta-and-sons`, industry 2, short_description `Beta & Sons is a synthetic bank.` (first `<p>` as plain text: entity decoded), website_url `""`, founded_year null, headquarters `Shelbyville, ZZ`, legacy_average_rating null, seo_title `""`, seo_description `""` |
 | Review | 201 | brand 101, title `Quick claim`, slug `quick-claim`, rating `4`, reviewer_wp_id `2`, reviewer_name `Mock Reader`, reviewer_location `Springfield, ZZ`, published_at `2026-02-01T12:30:00Z` |
 
 `content` on each Brand and Review is its raw `post_content` from `fixture.sql`. All rows `is_active = True`. `import_wp_users` creates 2 users:
