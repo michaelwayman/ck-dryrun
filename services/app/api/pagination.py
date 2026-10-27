@@ -34,6 +34,20 @@ class BrandPagination(PageNumberPagination):
         self.page: Page[Any] = paginator.page(number)
         return list(self.page)
 
+    def get_paginated_response_schema(self, schema: dict[str, Any]) -> dict[str, Any]:
+        # DRF's version marks next/previous `nullable`, which OpenAPI 3.1 dropped.
+        link = {"type": ["string", "null"], "format": "uri"}
+        return {
+            "type": "object",
+            "required": ["count", "next", "previous", "results"],
+            "properties": {
+                "count": {"type": "integer", "minimum": 0},
+                "next": link,
+                "previous": link,
+                "results": schema,
+            },
+        }
+
 
 def _positive_int(request: Request, name: str, default: int, maximum: int | None = None) -> int:
     raw = request.query_params.get(name)

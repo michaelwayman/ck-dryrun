@@ -1,6 +1,8 @@
 from typing import Any
 
 from django.db.models import QuerySet
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import exceptions, generics, views
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -8,8 +10,9 @@ from tokenauth import Role
 from tokenauth.drf import BearerTokenAuthentication, HasRole
 
 from api.errors import ApiError, invalid_parameter
-from api.filters import BrandFilter
-from api.pagination import BrandPagination
+from api.filters import DEFAULT_ORDERING, ORDERINGS, BrandFilter
+from api.pagination import MAX_PAGE_SIZE, BrandPagination
+from api.schema import ErrorSerializer
 from api.serializers import BrandCardSerializer, ShortDescriptionSerializer
 from catalog.models import Brand, attach_top_reviews
 
@@ -20,6 +23,38 @@ def brand_cards() -> QuerySet[Brand]:
     return Brand.objects.with_stats().select_related("industry")
 
 
+LIST_PARAMETERS = [
+    OpenApiParameter(
+        "page",
+        {"type": "integer", "minimum": 1, "default": 1},
+        description="1-based. A page past the last one is 404.",
+    ),
+    OpenApiParameter(
+        "page_size",
+        {"type": "integer", "minimum": 1, "maximum": MAX_PAGE_SIZE, "default": 12},
+        description=f"1 to {MAX_PAGE_SIZE}; more is 400.",
+    ),
+    OpenApiParameter(
+        "industry",
+        str,
+        many=True,
+        explode=True,
+        description="Industry slug, repeatable: brands in any of them. An unknown slug is 400.",
+    ),
+    OpenApiParameter(
+        "ordering",
+        str,
+        enum=list(ORDERINGS),
+        default=DEFAULT_ORDERING,
+        description="Then name, then pk. A null average_rating sorts last both ways.",
+    ),
+]
+
+
+@extend_schema(
+    parameters=LIST_PARAMETERS,
+    responses={200: BrandCardSerializer(many=True), 400: ErrorSerializer, 404: ErrorSerializer},
+)
 class BrandListView(generics.ListAPIView[Brand]):
     """GET /api/brands/: public, so it reads no credentials at all."""
 
@@ -61,6 +96,14 @@ class BrandDetailView(views.APIView):
             raise exceptions.MethodNotAllowed(method)
         super().initial(request, *args, **kwargs)
 
+    @extend_schema(
+        request=ShortDescriptionSerializer,
+        responses={
+            200: BrandCardSerializer,
+            **dict.fromkeys([400, 401, 403, 404, 405], ErrorSerializer),
+        },
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+    )
     def patch(self, request: Request, slug: str) -> Response:
         brand = Brand.objects.filter(slug=slug).first()
         if brand is None:

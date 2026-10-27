@@ -30,9 +30,9 @@ plugins = ["mypy_django_plugin.main"]
 check_untyped_defs = true
 files = ["config", "catalog", "api", "tests"]
 
-# django-environ, django-filter and PyMySQL ship no type hints.
+# django-environ, django-filter, PyMySQL and jsonschema ship no type hints.
 [[tool.mypy.overrides]]
-module = ["environ", "django_filters", "django_filters.*", "pymysql", "pymysql.*"]
+module = ["environ", "django_filters", "django_filters.*", "pymysql", "pymysql.*", "jsonschema"]
 ignore_missing_imports = true
 
 [tool.django-stubs]

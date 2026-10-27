@@ -27,12 +27,21 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "catalog",
-    "api",
+    "api.apps.ApiConfig",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+]
+
+# App templates only for now: drf-spectacular's Swagger UI page at /api/docs/.
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "APP_DIRS": True,
+        "OPTIONS": {"context_processors": ["django.template.context_processors.request"]},
+    },
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -73,6 +82,8 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "OAS_VERSION": "3.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # PATCH bodies use the full component: short_description is required (brands-api).
+    "COMPONENT_SPLIT_PATCH": False,
     # Pinned rather than @latest so /api/docs/ doesn't change under us.
     "SWAGGER_UI_DIST": "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.33.1",
 }

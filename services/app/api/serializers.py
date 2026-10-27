@@ -25,7 +25,7 @@ class TopReviewSerializer(serializers.Serializer[Review]):
 
 
 class BrandCardSerializer(serializers.Serializer[Brand]):
-    """A brand from `Brand.objects.with_stats()` after `attach_top_reviews()`."""
+    # Serializes Brand.objects.with_stats() rows after attach_top_reviews().
 
     name = serializers.CharField()
     slug = serializers.CharField()
