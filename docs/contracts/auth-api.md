@@ -13,7 +13,7 @@ Spec: R11, R17. Related: [access-token](access-token.md). Changes go through a `
 - Error bodies use the same shape as brands-api: `{"error": {"code", "message", "fields"}}`.
 - Every token endpoint is `POST`. None of them needs an `Authorization` header.
 - Responses carry `Cache-Control: no-store`.
-- Every endpoint can also return 405 `method_not_allowed` (a method other than `POST`), 415 `unsupported_media_type` (a body that isn't JSON) and 503 `unavailable` (auth-db is unreachable).
+- Every endpoint can also return 405 `method_not_allowed` (a method other than `POST`), 415 `unsupported_media_type` (a body that isn't JSON), 503 `unavailable` (auth-db is unreachable) and 500 `internal_error` (an unexpected server error; `fields` is `null`).
 - A field is present when it is a string, even an empty one. An empty `username`, `password` or `refresh` is simply invalid: login and refresh return 401, logout returns 204.
 
 ## POST /api/token/ (login)
