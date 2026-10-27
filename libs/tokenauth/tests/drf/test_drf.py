@@ -1,3 +1,4 @@
+import json
 from collections.abc import Callable
 from typing import Any
 
@@ -9,7 +10,7 @@ from rest_framework.views import APIView
 from tokenauth import Claims, Role
 from tokenauth.drf import BearerTokenAuthentication, HasRole, TokenUser
 
-from tests.conftest import mock_token
+from tests.conftest import CONTRACTS, mock_token
 
 pytestmark = pytest.mark.drf
 
@@ -51,7 +52,7 @@ def test_other_scheme_is_anonymous() -> None:
 def test_bad_header_is_invalid_token(header: str) -> None:
     response = call(header)
     assert response.status_code == 401
-    assert response["WWW-Authenticate"] == "Bearer"
+    assert response["WWW-Authenticate"] == 'Bearer error="invalid_token"'
     assert response.data["detail"].code == "invalid_token"
 
 
@@ -63,9 +64,17 @@ def test_token_error_is_invalid_token(name: str, clock: Callable[[str], None]) -
     assert response.data["detail"].code == "invalid_token"
 
 
-def test_expired_message(clock: Callable[[str], None]) -> None:
+def test_expired_matches_brands_api_example(clock: Callable[[str], None]) -> None:
+    example = json.loads(
+        (CONTRACTS / "brands-api" / "examples" / "patch-expired-token.json").read_text()
+    )
+    expected = example["response"]
     clock("expired")
-    assert str(call(f"Bearer {mock_token('expired')}").data["detail"]) == "Token has expired."
+    response = call(f"Bearer {mock_token('expired')}")
+    assert response.status_code == expected["status"]
+    assert response["WWW-Authenticate"] == expected["headers"]["WWW-Authenticate"]
+    assert response.data["detail"].code == expected["body"]["error"]["code"]
+    assert str(response.data["detail"]) == expected["body"]["error"]["message"]
 
 
 def test_valid_editor() -> None:

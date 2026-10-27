@@ -151,6 +151,16 @@ def test_claims_are_frozen(config: VerifierConfig) -> None:
         claims.sub = "2"  # type: ignore[misc]
 
 
+def test_config_matches_verifier_config_example(config: VerifierConfig) -> None:
+    data = json.loads((CONTRACTS / "shared-lib" / "examples" / "verifier-config.json").read_text())
+    assert list(data["public_keys"]) == list(config.public_keys)
+    assert (data["issuer"], data["audience"], data["leeway_seconds"]) == (
+        config.issuer,
+        config.audience,
+        config.leeway_seconds,
+    )
+
+
 def test_constants() -> None:
     assert tokenauth.CLAIMS_VERSION == 1
     assert frozenset({1}) == tokenauth.SUPPORTED_VERSIONS
