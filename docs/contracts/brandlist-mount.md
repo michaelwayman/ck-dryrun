@@ -39,7 +39,7 @@ When the component mounts it replaces the fallback markup inside the section. Th
 | `ordering` | `ordering` | Omitted from the URL when it equals `data-default-ordering`. |
 | `page` | `page` | Omitted when it is 1. |
 
-The server-rendered fallback understands the same keys, so the same URL gives the same view with or without JS. The component writes these keys with `history.pushState` and reads them again on `popstate`. It leaves any other query keys untouched.
+The server-rendered fallback understands the same keys, so the same URL gives the same view with or without JS. The component writes these keys with `history.pushState` and reads them again on `popstate`. It leaves any other query keys untouched. Invalid values are normalised and written back: industry slugs not in `data-industries` are dropped, an `ordering` outside the six allowed values becomes the default, and a `page` that isn't a positive integer becomes 1.
 
 ## Examples
 These live in [brandlist-mount/examples/](brandlist-mount/examples/):

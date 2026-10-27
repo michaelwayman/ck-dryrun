@@ -60,8 +60,10 @@ Meta is read from `wp_postmeta WHERE post_id IN (…) AND meta_key IN (<allow-li
 
 ### Deletions and safety
 - Rows whose `wp_id` was not seen in this run are set to `is_active = False`. Rows seen again are set back to `True`.
-- If the brand query returns 0 rows, the run aborts before writing anything.
-- The whole run happens in one transaction. At the end it prints `industries/brands/reviews: created N, updated N, deactivated N`.
+- Industries are never deactivated: `Industry` has no `is_active` (R1), and an industry that disappears from the source stays as it is.
+- A brand with no industry is skipped and logged. A review whose `post_date_gmt` is empty or invalid is skipped and logged.
+- If the brand query returns 0 rows, or every brand is skipped, the run aborts before writing anything.
+- The whole run happens in one transaction. At the end it prints one line per model: `industries: created N, updated N, deactivated N`, then `brands: …`, then `reviews: …`.
 
 ## Users (`import_wp_users`, auth)
 The importer reads:

@@ -11,6 +11,7 @@ Spec: R6, R13, R19. Changes go through a `contract` issue.
 - JSON over HTTP, UTF-8. Base path is `/api/`, served from the same origin as the pages.
 - All timestamps are ISO 8601 with a timezone. All slugs are WP `post_name` values.
 - Every error body has this shape: `{"error": {"code": string, "message": string, "fields": object|null}}`. `fields` maps a parameter or field name to a list of messages. It is `null` when the error isn't about a specific field.
+- The OpenAPI schema (`/api/schema/`) and Swagger UI (`/api/docs/`) are served beside this API (R19). They describe it but are not part of this contract.
 
 ## GET /api/brands/
 
@@ -87,7 +88,7 @@ The updated BrandCard, in the same shape as the GET result.
 | 401 | `invalid_token` | The token is expired, has a bad signature, the wrong `iss`/`aud`, an unknown `kid`, or an unsupported `v`. Response includes `WWW-Authenticate: Bearer error="invalid_token"`. |
 | 403 | `permission_denied` | The token is valid but `roles` does not contain `editor`. |
 | 404 | `not_found` | Unknown or inactive slug. |
-| 405 | `method_not_allowed` | `PUT`, `DELETE`, or `POST` on the detail URL. |
+| 405 | `method_not_allowed` | `GET`, `PUT`, `DELETE`, or `POST` on the detail URL. Returned before authentication. |
 
 ## Examples
 Every file is in [brands-api/examples/](brands-api/examples/). Each one holds a `request` and a `response`.
