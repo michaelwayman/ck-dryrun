@@ -76,7 +76,9 @@ describe("<BrandList /> states", () => {
     respond(DEFAULT_REQUEST, "list-empty.json");
     render(<BrandList config={CONFIG} />);
 
-    expect(await screen.findByText("No brands to show yet.")).toBeTruthy();
+    expect(
+      await screen.findByText("No brands match these filters."),
+    ).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Clear filters" })).toBeNull();
   });
 

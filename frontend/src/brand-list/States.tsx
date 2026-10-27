@@ -25,9 +25,7 @@ export function Loading() {
 export function Empty({ onClear }: { onClear?: () => void }) {
   return (
     <div className="brand-list__empty">
-      <p>
-        {onClear ? "No brands match these filters." : "No brands to show yet."}
-      </p>
+      <p>No brands match these filters.</p>
       {onClear && (
         <button type="button" className="brand-list__button" onClick={onClear}>
           Clear filters
