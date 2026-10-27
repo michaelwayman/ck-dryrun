@@ -1,10 +1,13 @@
-// <BrandList /> (brandlist-mount). Cards, badges, stars and the pager reuse the reference
-// partials; this file styles only the parts the theme never had, as `brand-list__*` (BEM), plus
-// keyboard focus and reduced motion. Each selector here is on scripts/css-diff.allow.json.
+// <BrandList />. Cards, badges, stars and the pager reuse the reference partials; this file styles
+// only the parts the theme never had, as `brand-list__*` (BEM), plus keyboard focus and reduced
+// motion. Each selector here is on scripts/css-diff.allow.json. Scales are Sass-only
+// (abstracts/tokens), so `:root` stays the reference's.
 @use "../abstracts" as *;
 
 // BEM element names (`block__element`) break the standard kebab-case class pattern on purpose.
 /* stylelint-disable selector-class-pattern */
+
+// --- Filter bar: one row on desktop; at the breakpoint the select goes full width -------------
 
 .brand-list__controls {
   display: flex;
@@ -22,80 +25,184 @@
 .brand-list__filters {
   display: flex;
   flex-wrap: wrap;
-  gap: space(2) space(4);
+  gap: space(2);
   min-width: 0;
   margin: 0;
-  padding: space(3) space(4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-card);
+  padding: 0;
+  border: 0;
+
+  @include breakpoint {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-.brand-list__legend {
-  padding: 0 space(1);
+.brand-list__legend,
+.brand-list__sort label {
+  margin: 0 0 space(1);
+  padding: 0;
+  font-size: font-size("sm");
   font-weight: 600;
 }
 
+// Each checkbox is a bordered chip at the control height; muted borders give 4.8:1 on white.
 .brand-list__option {
   display: inline-flex;
   align-items: center;
-  gap: space(1);
+  gap: space(2);
+  min-height: $control-height;
+  padding: 0 space(3);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius);
+  background: var(--color-card);
   cursor: pointer;
+
+  &:has(:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-badge-bg);
+  }
 }
 
 .brand-list__sort {
   display: flex;
   flex-direction: column;
-  gap: space(1);
-  font-weight: 600;
 
   select {
-    padding: space(2) space(3);
-    border: 1px solid var(--color-border);
+    min-height: $control-height;
+    padding: 0 space(3);
+    border: 1px solid var(--color-muted);
     border-radius: var(--radius);
     background: var(--color-card);
     color: var(--color-text);
     font: inherit;
-    font-weight: 400;
   }
 }
 
+// --- Count heading and results -----------------------------------------------------------------
+
 .brand-list__heading {
   margin: 0 0 space(4);
-  font-size: 1.25rem;
+  font-size: font-size("lg");
+  line-height: $line-height-tight;
 }
 
 // Long names and URLs wrap instead of widening the page at 320px.
 .brand-list__results {
   min-width: 0;
   overflow-wrap: anywhere;
+
+  // Grid rows stretch their items, so cards in a row share a height; the top review then sits at
+  // the bottom (`margin-top: auto`).
+  .card {
+    height: 100%;
+  }
+
+  .card h3 {
+    font-size: font-size("md");
+    line-height: $line-height-tight;
+  }
+
+  .excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+// Stars, value and count on one line; the same height when a brand has no reviews yet.
+.brand-list__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: space(2);
+  min-height: 1.5rem;
+
+  .rating-value {
+    font-size: 1rem;
+    font-weight: 700;
+  }
 }
 
 .brand-list__top-review {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 0.85rem;
-}
+  display: flex;
+  flex-direction: column;
+  gap: space(1);
+  margin-top: auto;
+  padding: space(2) 0 space(2) space(3);
+  border-left: 3px solid var(--color-badge-border);
+  font-size: font-size("sm");
 
-// Static skeleton: no animation, so nothing to turn off for reduced motion.
-.brand-list__skeleton-line {
-  display: block;
-  height: space(6);
-  border-radius: var(--radius);
-  background: var(--color-border);
-
-  &:last-child {
-    width: 60%;
+  p {
+    margin: 0;
   }
 }
+
+.brand-list__top-review-label {
+  color: var(--color-muted);
+  font-size: font-size("xs");
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.brand-list__top-review-title {
+  font-weight: 600;
+}
+
+.brand-list__top-review-snippet {
+  color: var(--color-muted);
+}
+
+// --- Loading: static skeleton cards shaped like a brand card ----------------------------------
+// No animation, so nothing to turn off for reduced motion.
+
+.brand-list__skeleton {
+  min-height: 15rem;
+}
+
+.brand-list__skeleton-line {
+  display: block;
+  height: space(3);
+  border-radius: var(--radius);
+  background: var(--color-border);
+}
+
+.brand-list__skeleton-line--title {
+  width: 60%;
+  height: space(5);
+}
+
+.brand-list__skeleton-line--rating {
+  width: 40%;
+}
+
+.brand-list__skeleton-line--pill {
+  width: 5rem;
+  height: space(5);
+}
+
+.brand-list__skeleton-line--short {
+  width: 70%;
+}
+
+.brand-list__skeleton-block {
+  display: block;
+  height: space(12);
+  margin-top: auto;
+  border-left: 3px solid var(--color-border);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--color-bg);
+}
+
+// --- Empty and error: a short message and one primary action -----------------------------------
 
 .brand-list__empty,
 .brand-list__error {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: space(3);
-  padding: space(6);
+  padding: space(8) space(6);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-card);
@@ -105,22 +212,57 @@
   }
 }
 
+.brand-list__empty {
+  align-items: center;
+  text-align: center;
+}
+
 .brand-list__error {
-  border-color: var(--color-accent);
+  flex-flow: row wrap;
+  align-items: center;
+  border-left: 4px solid var(--color-accent);
+
+  .brand-list__state-title {
+    flex-basis: 100%;
+  }
+}
+
+.brand-list__state-title {
+  font-size: font-size("md");
+  font-weight: 600;
 }
 
 .brand-list__button {
-  padding: space(2) space(4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: $control-height;
+  padding: 0 space(4);
   border: 1px solid var(--color-primary);
   border-radius: var(--radius);
   background: var(--color-primary);
   color: var(--color-on-primary);
   font: inherit;
   font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {
     background: var(--color-primary-dark);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// A secondary action next to the primary one: outlined, not filled.
+.brand-list__button--secondary {
+  background: var(--color-card);
+  color: var(--color-primary);
+
+  &:hover {
+    background: var(--color-badge-bg);
   }
 }
 
@@ -141,11 +283,11 @@
 .brand-list__controls :focus-visible,
 .brand-list__results :focus-visible,
 .brand-list__heading:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: $focus-ring;
   outline-offset: 2px;
 }
 
-// The reference cards lift on hover; not for users who ask for less motion.
+// The reference cards lift on hover, and buttons press in; not for users who ask for less motion.
 @media (prefers-reduced-motion: reduce) {
   .brand-list__results .card {
     transition: none;
@@ -153,5 +295,9 @@
     &:hover {
       transform: none;
     }
+  }
+
+  .brand-list__button:active {
+    transform: none;
   }
 }

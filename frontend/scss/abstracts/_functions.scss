@@ -9,3 +9,12 @@
 
   @return map.get(tokens.$spacing, $step);
 }
+
+// A step of the type scale, e.g. `font-size("sm")` is 0.85rem.
+@function font-size($step) {
+  @if not map.has-key(tokens.$font-size, $step) {
+    @error "Unknown font size `#{$step}`.";
+  }
+
+  @return map.get(tokens.$font-size, $step);
+}

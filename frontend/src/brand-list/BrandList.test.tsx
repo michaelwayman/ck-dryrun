@@ -57,7 +57,7 @@ describe("<BrandList />", () => {
 
     expect(search()).toContain("page=2");
     expect(document.activeElement).toBe(
-      screen.getByRole("heading", { name: "Results" }),
+      screen.getByRole("heading", { level: 2 }),
     );
     const nav = await screen.findByRole("navigation", { name: "Brand pages" });
     expect(within(nav).getByText("2").getAttribute("aria-current")).toBe(

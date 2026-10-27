@@ -3,17 +3,26 @@ import type { BrandsApiError } from "./types";
 
 const SKELETON_CARDS = 3;
 
-// Static placeholder cards (no animation); the busy region around them carries the state.
+// "1 brand", "12 brands": shared by the visible heading and the live region.
+export function brandCount(count: number) {
+  return `${count} ${count === 1 ? "brand" : "brands"}`;
+}
+
+// Static placeholder cards (no animation) shaped like a brand card: name, rating, badge, two
+// lines of excerpt and the top review. The busy region around them carries the state.
 export function Loading() {
   return (
     <>
       <p className="brand-list__sr-only">Loading brands…</p>
       <div className="grid" aria-hidden="true">
         {Array.from({ length: SKELETON_CARDS }, (_, i) => (
-          <div key={i} className="card">
+          <div key={i} className="card brand-list__skeleton">
+            <span className="brand-list__skeleton-line brand-list__skeleton-line--title" />
+            <span className="brand-list__skeleton-line brand-list__skeleton-line--rating" />
+            <span className="brand-list__skeleton-line brand-list__skeleton-line--pill" />
             <span className="brand-list__skeleton-line" />
-            <span className="brand-list__skeleton-line" />
-            <span className="brand-list__skeleton-line" />
+            <span className="brand-list__skeleton-line brand-list__skeleton-line--short" />
+            <span className="brand-list__skeleton-block" />
           </div>
         ))}
       </div>
@@ -21,11 +30,21 @@ export function Loading() {
   );
 }
 
-// Without `onClear` nothing is filtered, so there is nothing to clear.
-export function Empty({ onClear }: { onClear?: () => void }) {
+// Without `onClear` nothing is filtered, so there is nothing to clear. `filters` names the
+// industries that are checked.
+export function Empty({
+  filters,
+  onClear,
+}: {
+  filters: string[];
+  onClear?: () => void;
+}) {
   return (
     <div className="brand-list__empty">
-      <p>No brands match these filters.</p>
+      <p className="brand-list__state-title">No brands match these filters.</p>
+      {filters.length > 0 && (
+        <p className="meta">Filtered by {filters.join(", ")}.</p>
+      )}
       {onClear && (
         <button type="button" className="brand-list__button" onClick={onClear}>
           Clear filters
@@ -51,14 +70,15 @@ export function ErrorState({
       : "The brands couldn't be loaded.";
   return (
     <div className="brand-list__error" role="alert">
-      <p>
-        {message} <span className="meta">({error.message})</span>
-      </p>
+      <p className="brand-list__state-title">{message}</p>
       <button type="button" className="brand-list__button" onClick={onRetry}>
         Retry
       </button>
       {firstPageHref && error.code === "not_found" && (
-        <a className="brand-list__button" href={firstPageHref}>
+        <a
+          className="brand-list__button brand-list__button--secondary"
+          href={firstPageHref}
+        >
           Go to page 1
         </a>
       )}
@@ -68,8 +88,7 @@ export function ErrorState({
 
 // Always in the DOM so screen readers track it; filled only after a successful load.
 export function LiveRegion({ count }: { count: number | null }) {
-  const text =
-    count === null ? "" : `${count} ${count === 1 ? "brand" : "brands"} found.`;
+  const text = count === null ? "" : `${brandCount(count)} found.`;
   return (
     <p className="brand-list__sr-only" aria-live="polite">
       {text}

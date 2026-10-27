@@ -24,13 +24,10 @@ export function BrandCard({ brand }: { brand: Brand }) {
   const reviews = `${brand.review_count} ${brand.review_count === 1 ? "review" : "reviews"}`;
   return (
     <article className="card">
-      <div>
-        <span className="badge">{brand.industry.name}</span>
-      </div>
       <h3>
         <a href={brand.url}>{brand.name}</a>
       </h3>
-      <div>
+      <div className="brand-list__rating">
         {brand.average_rating === null ? (
           <span className="meta">No reviews yet</span>
         ) : (
@@ -40,14 +37,22 @@ export function BrandCard({ brand }: { brand: Brand }) {
           </>
         )}
       </div>
+      <div>
+        <span className="badge">{brand.industry.name}</span>
+      </div>
       {brand.short_description && (
         <p className="excerpt">{brand.short_description}</p>
       )}
       {brand.top_review && (
-        <p className="brand-list__top-review">
-          <a href={brand.top_review.url}>{brand.top_review.title}</a>:{" "}
-          {brand.top_review.snippet}
-        </p>
+        <div className="brand-list__top-review">
+          <p className="brand-list__top-review-label">Top review</p>
+          <p className="brand-list__top-review-title">
+            <a href={brand.top_review.url}>{brand.top_review.title}</a>
+          </p>
+          <p className="brand-list__top-review-snippet">
+            {brand.top_review.snippet}
+          </p>
+        </div>
       )}
     </article>
   );
