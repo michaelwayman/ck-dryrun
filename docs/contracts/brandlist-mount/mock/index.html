@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- Static stand-in for the app's /brand/ template (brandlist-mount contract). Brand data is synthetic. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brands (brandlist-mount mock)</title>
+    <!-- Django uses {% static 'css/main.css' %}; Vite serves frontend/ as root. -->
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Brands</h1>
+      <!-- Attribute values copied exactly from ../examples/mount-attributes.json. -->
+      <section id="brand-list"
+               data-api-url="/api/brands/"
+               data-industries='[{"slug":"finance","name":"Finance"},{"slug":"home-services","name":"Home Services"},{"slug":"insurance","name":"Insurance"},{"slug":"retail","name":"Retail"},{"slug":"telecom","name":"Telecom"}]'
+               data-page-size="12"
+               data-default-ordering="-average_rating">
+        <!-- No-JS fallback (R16): replaced when <BrandList /> mounts. -->
+        <div class="grid">
+          <article class="card">
+            <div><span class="badge">Finance</span></div>
+            <h3><a href="/brand/example-finance-co/">Example Finance Co</a></h3>
+            <div><span class="stars" aria-label="Rating: 4.5 out of 5"><span class="star-full">&#9733;</span><span class="star-full">&#9733;</span><span class="star-full">&#9733;</span><span class="star-full">&#9733;</span><span class="star-empty">&#9734;</span><span class="rating-value">4.5</span></span> <span class="meta">(4)</span></div>
+            <p class="meta">Springfield, USA</p>
+            <p class="excerpt">A synthetic finance brand used only to give the mock grid a realistic card.</p>
+          </article>
+          <article class="card">
+            <div><span class="badge">Insurance</span></div>
+            <h3><a href="/brand/sample-insurance-group/">Sample Insurance Group</a></h3>
+            <div><span class="stars" aria-label="Rating: 3.7 out of 5"><span class="star-full">&#9733;</span><span class="star-full">&#9733;</span><span class="star-full">&#9733;</span><span class="star-empty">&#9734;</span><span class="star-empty">&#9734;</span><span class="rating-value">3.7</span></span> <span class="meta">(2)</span></div>
+            <p class="meta">Shelbyville, USA</p>
+            <p class="excerpt">A synthetic insurance brand with a shorter excerpt.</p>
+          </article>
+          <article class="card">
+            <div><span class="badge">Telecom</span></div>
+            <h3><a href="/brand/test-telecom-ltd/">Test Telecom Ltd</a></h3>
+            <div><span class="stars" aria-label="Rating: 0.0 out of 5"><span class="star-empty">&#9734;</span><span class="star-empty">&#9734;</span><span class="star-empty">&#9734;</span><span class="star-empty">&#9734;</span><span class="star-empty">&#9734;</span><span class="rating-value">0.0</span></span> <span class="meta">(0)</span></div>
+            <p class="meta">Capital City, USA</p>
+            <p class="excerpt">A synthetic telecom brand with no reviews yet.</p>
+          </article>
+        </div>
+        <nav class="pagination" aria-label="Brand pages">
+          <span class="page-numbers current" aria-current="page">1</span>
+          <a class="page-numbers" href="?page=2">2</a>
+          <a class="next page-numbers" href="?page=2">Next</a>
+        </nav>
+      </section>
+    </main>
+    <!-- Django uses {% static 'brandlist/brand-list.js' %}; under Vite the entry is /src/main.tsx. -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
