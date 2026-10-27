@@ -119,13 +119,12 @@ typecheck: dev-image frontend-image
 # tokenauth runs in a bare python image with only its own [test] extra, which proves its core
 # has no Django dependency (C5); its drf-marked tests then run in the dev image. The bare run
 # copies the package to /tmp/tokenauth, so tests/../../../docs resolves to /docs as in the repo.
-# pytest exits 5 when no test is collected, which counts as a pass until drf tests exist.
 # No suite needs a database yet; DB-backed tests add the Postgres services they need in their
 # own issues.
 test: dev-image frontend-image
 	docker run --rm -v "$(CURDIR)/libs/tokenauth:/src:ro" -v "$(CONTRACTS):/docs/contracts:ro" python:3.14-slim sh -c \
 		'cp -r /src /tmp/tokenauth && cd /tmp/tokenauth && pip install --quiet --root-user-action=ignore ".[test]" && pytest -p no:cacheprovider'
-	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/libs/tokenauth $(DEV_IMAGE) pytest -p no:cacheprovider -m drf || [ $$? -eq 5 ]
+	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/libs/tokenauth $(DEV_IMAGE) pytest -p no:cacheprovider -m drf
 	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/services/app $(DEV_IMAGE) pytest
 	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/services/auth $(DEV_IMAGE) pytest
 	$(FRONTEND_RUN) npm test
