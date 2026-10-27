@@ -1,0 +1,13 @@
+@use "../abstracts" as *;
+
+.site-footer {
+  background: var(--color-grey-900);
+  color: var(--color-grey-300);
+  padding: space(8) 0;
+  margin-top: space(16);
+  font-size: 0.9rem;
+
+  a {
+    color: var(--color-grey-400);
+  }
+}

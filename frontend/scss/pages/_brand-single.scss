@@ -1,0 +1,85 @@
+@use "../abstracts" as *;
+
+// Brand page: header block, description, then its reviews.
+.brand-hero {
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+  padding: space(10) 0;
+
+  h1 {
+    font-size: 2rem;
+    margin: 0 0 space(3);
+    letter-spacing: -0.02em;
+  }
+
+  .brand-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin-top: 14px;
+
+    strong {
+      color: var(--color-text);
+    }
+  }
+}
+
+.brand-body {
+  padding: space(8) 0 space(12);
+
+  .content {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 28px;
+    font-size: 1.02rem;
+  }
+}
+
+.reviews-section {
+  padding: space(6) 0 space(16);
+
+  h2 {
+    font-size: 1.4rem;
+    margin: 0 0 18px;
+  }
+}
+
+.review-item {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: space(4);
+
+  .review-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: space(2);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+
+    a {
+      color: var(--color-text);
+    }
+  }
+
+  .review-byline {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+    margin: space(1) 0 space(3);
+  }
+
+  .review-body {
+    color: var(--color-grey-800);
+    font-size: 0.95rem;
+  }
+}

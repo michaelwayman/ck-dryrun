@@ -4,3 +4,14 @@
 @use "base/root";
 @use "base/reset";
 @use "layout/container";
+@use "components/header";
+@use "components/hero";
+@use "components/sections";
+@use "components/cards";
+@use "components/stars";
+@use "components/badge";
+@use "components/footer";
+@use "components/pagination";
+@use "pages/brand-single";
+@use "pages/review-single";
+@use "pages/page";
