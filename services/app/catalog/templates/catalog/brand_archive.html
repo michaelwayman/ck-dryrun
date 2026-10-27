@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Brands | Brand Reviews Challenge{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>Brands</h1>
+    <p>Browse all brands in our reviews directory.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <section id="brand-list"
+             data-api-url="{{ mount.api_url }}"
+             data-industries="{{ mount.industries }}"
+             data-page-size="{{ mount.page_size }}"
+             data-default-ordering="{{ mount.default_ordering }}">
+      {# No-JS fallback (R16): <BrandList /> replaces it when it mounts. #}
+      <div class="grid">
+        {% for brand in page %}{% include "catalog/partials/brand_card.html" %}{% empty %}<p class="meta">No brands found.</p>{% endfor %}
+      </div>
+      {% include "catalog/partials/pagination.html" with label="Brand pages" %}
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{% static 'brandlist/brand-list.js' %}"></script>{% endblock %}
