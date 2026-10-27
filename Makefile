@@ -5,8 +5,12 @@ WPCLI := $(COMPOSE) run --rm wpcli
 # Every check runs in Docker (C1), identical locally and in CI. One dev image (the app
 # Dockerfile's `dev` target) holds ruff, mypy and pytest for the whole uv workspace; the
 # `frontend` target holds node_modules for the frontend checks.
-DEV_IMAGE := ck-dev
-FRONTEND_IMAGE := ck-frontend
+# Tags carry a short hash of this checkout's path, so parallel worktrees on one Docker daemon
+# don't replace each other's images mid-run. Values given on the command line still win.
+CK_TAG ?= $(shell printf %s "$(CURDIR)" | shasum | cut -c1-8)
+CK_TAG := $(CK_TAG)
+DEV_IMAGE ?= ck-dev-$(CK_TAG)
+FRONTEND_IMAGE ?= ck-frontend-$(CK_TAG)
 PY_MEMBERS := libs/tokenauth services/app services/auth
 # Test runs mount docs/contracts (and reference, for the frontend) read-only at the same path
 # relative to each package as in the repo, so tests read contract examples and mocks in place.
@@ -25,7 +29,7 @@ comma := ,
 cache_flags = $(if $(BUILDX_CACHE),--cache-from type=local$(comma)src=$(BUILDX_CACHE)/$(1) --cache-to type=local$(comma)dest=$(BUILDX_CACHE)-new/$(1)$(comma)mode=max)
 
 .PHONY: help up down restart logs reset wp bootstrap dump status \
-	dev-image frontend-image lint fmt-check typecheck test check fmt lint-fix css migrate
+	dev-image frontend-image clean-images lint fmt-check typecheck test check fmt lint-fix css migrate
 
 help:
 	@echo "Targets:"
@@ -47,6 +51,7 @@ help:
 	@echo "  fmt             Apply ruff format and prettier"
 	@echo "  lint-fix        Apply ruff's and eslint's fixes"
 	@echo "  css             Compile frontend/scss into frontend/dist/css"
+	@echo "  clean-images    Remove this checkout's dev and frontend images ($(DEV_IMAGE), $(FRONTEND_IMAGE))"
 
 up:
 	$(COMPOSE) up -d --build
@@ -95,6 +100,9 @@ dev-image:
 
 frontend-image:
 	docker buildx build --load --target frontend -f services/app/Dockerfile -t $(FRONTEND_IMAGE) $(call cache_flags,frontend) .
+
+clean-images:
+	-docker image rm $(DEV_IMAGE) $(FRONTEND_IMAGE)
 
 check: lint fmt-check typecheck test
 
