@@ -1,0 +1,17 @@
+// Entry point, compiled by `npm run build:css`. Layers go general to specific; within
+// components and pages the order follows reference/theme.css.
+
+@use "base/root";
+@use "base/reset";
+@use "layout/container";
+@use "components/header";
+@use "components/hero";
+@use "components/sections";
+@use "components/cards";
+@use "components/stars";
+@use "components/badge";
+@use "components/footer";
+@use "components/pagination";
+@use "pages/brand-single";
+@use "pages/review-single";
+@use "pages/page";

@@ -1,0 +1,46 @@
+@use "../abstracts" as *;
+
+.site-header {
+  background: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+  padding: 18px 0;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: space(6);
+
+    @include breakpoint {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: space(3);
+    }
+  }
+}
+
+.site-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+
+  a {
+    color: var(--color-text);
+  }
+}
+
+.site-nav {
+  display: flex;
+  gap: 22px;
+  font-size: 0.95rem;
+
+  a {
+    color: var(--color-text);
+    font-weight: 500;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+}

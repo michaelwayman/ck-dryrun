@@ -1,0 +1,51 @@
+@use "../abstracts" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+
+  @include breakpoint {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    a {
+      color: var(--color-text);
+    }
+  }
+
+  .meta {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .excerpt {
+    color: var(--color-grey-700);
+    font-size: 0.92rem;
+    margin: 0;
+  }
+}

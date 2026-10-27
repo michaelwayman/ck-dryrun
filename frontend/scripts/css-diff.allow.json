@@ -1,0 +1,54 @@
+{
+  "selectors": [
+    {
+      "match": "*:focus-visible*",
+      "reason": "Deliberate delta (SPEC R9): keyboard focus styles the reference lacks."
+    },
+    {
+      "match": "@media*prefers-reduced-motion*",
+      "reason": "Deliberate delta (SPEC R9): turns off the card hover transition for users who ask for less motion."
+    },
+    {
+      "match": "*.brand-list__*",
+      "reason": "Deliberate delta (SPEC R9): the <BrandList /> component's BEM elements (brand-list__*), which the WordPress theme never had."
+    }
+  ],
+  "customProperties": [
+    {
+      "name": "--color-on-primary",
+      "reason": "New token: text on primary backgrounds (#ffffff in .hero and .pagination .page-numbers.current)."
+    },
+    {
+      "name": "--color-hero-deep",
+      "reason": "New token: the end stop of the .hero gradient (#134e4a)."
+    },
+    {
+      "name": "--color-badge-bg",
+      "reason": "New token: .badge background (#ecfdf5)."
+    },
+    {
+      "name": "--color-badge-border",
+      "reason": "New token: .badge border (#d1fae5)."
+    },
+    {
+      "name": "--color-grey-300",
+      "reason": "New token: .site-footer text (#d1d5db)."
+    },
+    {
+      "name": "--color-grey-400",
+      "reason": "New token: .site-footer links (#9ca3af)."
+    },
+    {
+      "name": "--color-grey-700",
+      "reason": "New token: .card .excerpt text (#374151)."
+    },
+    {
+      "name": "--color-grey-800",
+      "reason": "New token: .review-item .review-body text (#1f2937)."
+    },
+    {
+      "name": "--color-grey-900",
+      "reason": "New token: .site-footer background (#111827)."
+    }
+  ]
+}

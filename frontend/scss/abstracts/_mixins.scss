@@ -1,0 +1,28 @@
+@use "sass:map";
+@use "sass:meta";
+@use "tokens";
+
+// Emits a (nested) token map as custom properties: `("color": ("bg": #f7f7f5))` becomes
+// `--color-bg: #f7f7f5`.
+@mixin custom-properties($tokens, $prefix: "--") {
+  @each $name, $value in $tokens {
+    @if meta.type-of($value) == "map" {
+      @include custom-properties($value, "#{$prefix}#{$name}-");
+    } @else {
+      #{$prefix}#{$name}: #{meta.inspect($value)};
+    }
+  }
+}
+
+// Desktop-first like the reference: the block applies at and below the breakpoint.
+@mixin breakpoint($name: "sm") {
+  @if not map.has-key(tokens.$breakpoints, $name) {
+    @error "Unknown breakpoint `#{$name}`.";
+  }
+
+  // The reference's max-width form; the range form would change the compiled media query.
+  // stylelint-disable-next-line media-feature-range-notation
+  @media (max-width: map.get(tokens.$breakpoints, $name)) {
+    @content;
+  }
+}
