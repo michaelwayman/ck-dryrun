@@ -13,7 +13,7 @@ from catalog.models import Brand, Industry, Review
 from catalog.text import first_paragraph_text
 
 MAX_FOUNDED_YEAR = 32767  # PositiveSmallIntegerField's upper bound on every Django backend
-MAX_WEBSITE_URL = Brand._meta.get_field("website_url").max_length
+MAX_WEBSITE_URL = 2048  # Brand.website_url max_length
 
 log = logging.getLogger("catalog.importer")
 
