@@ -8,8 +8,12 @@ WPCLI := $(COMPOSE) run --rm wpcli
 DEV_IMAGE := ck-dev
 FRONTEND_IMAGE := ck-frontend
 PY_MEMBERS := libs/tokenauth services/app services/auth
+# Test runs mount docs/contracts (and reference, for the frontend) read-only at the same path
+# relative to each package as in the repo, so tests read contract examples and mocks in place.
+CONTRACTS := $(CURDIR)/docs/contracts
 DEV_RUN := docker run --rm $(DEV_IMAGE)
-FRONTEND_RUN := docker run --rm $(FRONTEND_IMAGE)
+DEV_TEST_MOUNTS := -v "$(CONTRACTS):/workspace/docs/contracts:ro"
+FRONTEND_RUN := docker run --rm -v "$(CONTRACTS):/docs/contracts:ro" -v "$(CURDIR)/reference:/reference:ro" $(FRONTEND_IMAGE)
 # Write targets bind-mount the source and run as the host user, so the host owns what they write.
 HOST_USER := --user $$(id -u):$$(id -g)
 
@@ -39,7 +43,7 @@ help:
 	@echo "  lint            ruff, eslint and stylelint"
 	@echo "  fmt-check       ruff format and prettier, check only"
 	@echo "  typecheck       mypy per Python member, tsc for the frontend"
-	@echo "  test            tokenauth (no Django), app, auth and frontend suites"
+	@echo "  test            tokenauth (no Django, then its drf tests), app, auth and frontend suites"
 	@echo "  fmt             Apply ruff format and prettier"
 	@echo "  lint-fix        Apply ruff's and eslint's fixes"
 	@echo "  css             Compile frontend/scss into frontend/dist/css"
@@ -113,13 +117,17 @@ typecheck: dev-image frontend-image
 	$(FRONTEND_RUN) npm run typecheck
 
 # tokenauth runs in a bare python image with only its own [test] extra, which proves its core
-# has no Django dependency (C5). No suite needs a database yet; DB-backed tests add the
-# Postgres services they need in their own issues.
+# has no Django dependency (C5); its drf-marked tests then run in the dev image. The bare run
+# copies the package to /tmp/tokenauth, so tests/../../../docs resolves to /docs as in the repo.
+# pytest exits 5 when no test is collected, which counts as a pass until drf tests exist.
+# No suite needs a database yet; DB-backed tests add the Postgres services they need in their
+# own issues.
 test: dev-image frontend-image
-	docker run --rm -v "$(CURDIR)/libs/tokenauth:/src:ro" python:3.14-slim sh -c \
+	docker run --rm -v "$(CURDIR)/libs/tokenauth:/src:ro" -v "$(CONTRACTS):/docs/contracts:ro" python:3.14-slim sh -c \
 		'cp -r /src /tmp/tokenauth && cd /tmp/tokenauth && pip install --quiet --root-user-action=ignore ".[test]" && pytest -p no:cacheprovider'
-	docker run --rm -w /workspace/services/app $(DEV_IMAGE) pytest
-	docker run --rm -w /workspace/services/auth $(DEV_IMAGE) pytest
+	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/libs/tokenauth $(DEV_IMAGE) pytest -p no:cacheprovider -m drf || [ $$? -eq 5 ]
+	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/services/app $(DEV_IMAGE) pytest
+	docker run --rm $(DEV_TEST_MOUNTS) -w /workspace/services/auth $(DEV_IMAGE) pytest
 	$(FRONTEND_RUN) npm test
 
 # --- Write targets: change files on the host --------------------------------------------------
