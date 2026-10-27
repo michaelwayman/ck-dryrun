@@ -8,8 +8,8 @@ from django.utils import timezone
 from pytest_django.fixtures import Settings
 from tokenauth import verify_token
 
-from tokens.refresh import InvalidRefreshToken, rotate
 from tokens.models import RefreshToken
+from tokens.refresh import InvalidRefreshToken, rotate
 from tokens.tests.conftest import contract_example, make_user, verifier_config
 
 pytestmark = pytest.mark.django_db
