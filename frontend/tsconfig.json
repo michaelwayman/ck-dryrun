@@ -13,7 +13,8 @@
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": { "msw": ["./node_modules/msw"] }
   },
   "include": ["src", "vite.config.ts"]
 }
