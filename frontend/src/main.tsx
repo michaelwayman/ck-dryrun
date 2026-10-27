@@ -1,2 +1,4 @@
-// Entry for the <BrandList /> bundle. The component and its mount logic arrive in M6.
-export {};
+// Entry for the <BrandList /> bundle: an ES module that mounts itself on load (brandlist-mount).
+import { mountBrandList } from "./brand-list/mount";
+
+mountBrandList();
