@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { BrandCard } from "./BrandCard";
 import { Filters, Pager, Sort } from "./Controls";
+import { Empty, ErrorState, LiveRegion, Loading } from "./States";
 import type { MountConfig } from "./types";
 import { useBrandList } from "./useBrandList";
 import { useUrlState } from "./url-state";
@@ -34,10 +35,21 @@ export function BrandList({ config }: { config: MountConfig }) {
       <h2 className="brand-list__heading" ref={heading} tabIndex={-1}>
         Results
       </h2>
-      <div className="brand-list__results">
-        {result.status === "loading" && <p>Loading brands…</p>}
-        {result.status === "error" && <p>{result.error.message}</p>}
-        {result.status === "success" && (
+      <LiveRegion
+        count={result.status === "success" ? result.data.count : null}
+      />
+      <div
+        className="brand-list__results"
+        aria-busy={result.status === "loading"}
+      >
+        {result.status === "loading" && <Loading />}
+        {result.status === "error" && (
+          <ErrorState error={result.error} onRetry={result.retry} />
+        )}
+        {result.status === "success" && result.data.count === 0 && (
+          <Empty onClear={() => navigate({ industries: [] })} />
+        )}
+        {result.status === "success" && result.data.count > 0 && (
           <>
             <div className="grid">
               {result.data.results.map((brand) => (
