@@ -9,8 +9,8 @@
       "reason": "Deliberate delta (SPEC R9): turns off the card hover transition for users who ask for less motion."
     },
     {
-      "match": "*.brand-list*",
-      "reason": "Deliberate delta (SPEC R9): the <BrandList /> component's BEM block (brand-list, brand-list__*), which the WordPress theme never had."
+      "match": "*.brand-list__*",
+      "reason": "Deliberate delta (SPEC R9): the <BrandList /> component's BEM elements (brand-list__*), which the WordPress theme never had."
     }
   ],
   "customProperties": [
