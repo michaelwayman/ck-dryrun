@@ -4,6 +4,9 @@ import { createRoot, type Root } from "react-dom/client";
 import { BrandList } from "./BrandList";
 import { isOrdering, type Industry, type MountConfig } from "./types";
 
+// brands-api answers 400 above this, so a larger value is config the component can't use.
+const MAX_PAGE_SIZE = 50;
+
 function isIndustry(value: unknown): value is Industry {
   const { slug, name } = (value ?? {}) as Partial<Industry>;
   return typeof slug === "string" && typeof name === "string";
@@ -24,6 +27,7 @@ export function readConfig(element: HTMLElement): MountConfig | null {
     !parsed.every(isIndustry) ||
     !Number.isInteger(size) ||
     size < 1 ||
+    size > MAX_PAGE_SIZE ||
     !isOrdering(defaultOrdering)
   ) {
     return null;

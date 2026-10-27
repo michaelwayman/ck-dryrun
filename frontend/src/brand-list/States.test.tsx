@@ -95,6 +95,15 @@ describe("<BrandList /> states", () => {
     expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy();
   });
 
+  it("error: a 200 that isn't a brand page", async () => {
+    server.use(http.get("*/api/brands/", () => HttpResponse.text("<html>")));
+    render(<BrandList config={CONFIG} />);
+
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "could not be read",
+    );
+  });
+
   it("brands without reviews say so instead of showing stars", async () => {
     server.use(
       http.get("*/api/brands/", () =>

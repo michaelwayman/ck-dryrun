@@ -27,6 +27,12 @@ function isErrorBody(body: unknown): body is { error: ApiErrorBody } {
   return typeof error?.code === "string" && typeof error.message === "string";
 }
 
+// Only the shape the list needs; the fields themselves are trusted (brands-api).
+function isBrandPage(body: unknown): body is BrandPage {
+  const page = body as Partial<BrandPage> | null;
+  return typeof page?.count === "number" && Array.isArray(page.results);
+}
+
 async function load(url: string, signal: AbortSignal): Promise<BrandPage> {
   let response: Response;
   try {
@@ -43,7 +49,14 @@ async function load(url: string, signal: AbortSignal): Promise<BrandPage> {
     });
   }
   const body: unknown = await response.json().catch(() => null);
-  if (response.ok) return body as BrandPage;
+  if (response.ok) {
+    if (isBrandPage(body)) return body;
+    throw new BrandsApiError(response.status, {
+      code: "bad_response",
+      message: "The brands could not be read.",
+      fields: null,
+    });
+  }
   throw new BrandsApiError(
     response.status,
     isErrorBody(body)

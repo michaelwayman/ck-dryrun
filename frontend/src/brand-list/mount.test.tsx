@@ -55,6 +55,7 @@ describe("mountBrandList", () => {
   it.each([
     ["data-industries", "[not json"],
     ["data-page-size", "twelve"],
+    ["data-page-size", "51"],
     ["data-default-ordering", "founded_year"],
   ])("leaves the fallback when %s is %s", (name, value) => {
     const el = section({ [name]: value });
