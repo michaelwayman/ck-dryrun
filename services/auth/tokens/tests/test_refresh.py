@@ -8,7 +8,7 @@ from django.utils import timezone
 from pytest_django.fixtures import Settings
 from tokenauth import verify_token
 
-from tokens import refresh
+from tokens.refresh import InvalidRefreshToken, rotate
 from tokens.models import RefreshToken
 from tokens.tests.conftest import contract_example, make_user, verifier_config
 
@@ -101,8 +101,8 @@ def test_replay_never_mints_and_still_revokes(client: Client, admin: User) -> No
         minted.append(user)
         return "access"
 
-    with pytest.raises(refresh.InvalidRefreshToken):
-        refresh.rotate(token_a, timezone.now(), mint)
+    with pytest.raises(InvalidRefreshToken):
+        rotate(token_a, timezone.now(), mint)
 
     assert minted == []
     assert not RefreshToken.objects.filter(revoked_at__isnull=True).exists()
