@@ -42,7 +42,20 @@ def snippet(value: str | None, words: int = text.SNIPPET_WORDS) -> str:
 @register.filter
 def url_host(value: str) -> str:
     """The host of a URL, as the theme shows brand websites; the URL itself if it has none."""
-    return urlsplit(value).hostname or value
+    try:
+        return urlsplit(value).hostname or value
+    except ValueError:  # malformed, e.g. "http://[bad"
+        return value
+
+
+@register.filter
+def web_href(value: str) -> str:
+    """The URL when it is safe as a link (http/https with a host), else "" for plain text."""
+    try:
+        parts = urlsplit(value)
+    except ValueError:
+        return ""
+    return value if parts.scheme in {"http", "https"} and parts.hostname else ""
 
 
 @register.inclusion_tag("catalog/partials/stars.html")

@@ -1,7 +1,7 @@
 import pytest
 from django.template import Context, Template
 
-from catalog.templatetags.catalog_tags import sanitize_html, url_host
+from catalog.templatetags.catalog_tags import sanitize_html, url_host, web_href
 
 
 def render(source: str, **context: object) -> str:
@@ -71,7 +71,28 @@ def test_snippet_filter_cuts_plain_text() -> None:
 
 @pytest.mark.parametrize(
     ("url", "host"),
-    [("https://www.example.test/path?q=1", "www.example.test"), ("not a url", "not a url")],
+    [
+        ("https://www.example.test/path?q=1", "www.example.test"),
+        ("not a url", "not a url"),
+        ("http://[bad", "http://[bad"),
+    ],
 )
 def test_url_host(url: str, host: str) -> None:
     assert url_host(url) == host
+
+
+@pytest.mark.parametrize(
+    ("url", "href"),
+    [
+        ("https://www.example.test/a?q=1", "https://www.example.test/a?q=1"),
+        ("HTTP://example.test", "HTTP://example.test"),
+        ("javascript:alert(1)", ""),
+        ("data:text/html,x", ""),
+        ("ftp://example.test/", ""),
+        ("https://", ""),
+        ("www.example.test", ""),
+        ("http://[bad", ""),
+    ],
+)
+def test_web_href_allows_only_http_urls_with_a_host(url: str, href: str) -> None:
+    assert web_href(url) == href

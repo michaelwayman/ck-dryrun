@@ -13,7 +13,7 @@
     <div class="brand-meta">
       {% if brand.headquarters %}<div><strong>HQ:</strong> {{ brand.headquarters }}</div>{% endif %}
       {% if brand.founded_year %}<div><strong>Founded:</strong> {{ brand.founded_year }}</div>{% endif %}
-      {% if brand.website_url %}<div><strong>Website:</strong> <a href="{{ brand.website_url }}" rel="nofollow noopener" target="_blank">{{ brand.website_url|url_host }}</a></div>{% endif %}
+      {% if brand.website_url %}<div><strong>Website:</strong> {% with href=brand.website_url|web_href %}{% if href %}<a href="{{ href }}" rel="nofollow noopener" target="_blank">{{ href|url_host }}</a>{% else %}{{ brand.website_url }}{% endif %}{% endwith %}</div>{% endif %}
     </div>
   </div>
 </section>
