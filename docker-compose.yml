@@ -188,6 +188,12 @@ services:
       DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
       DATABASE_URL: postgres://app:${APP_DB_PASSWORD:-app}@app-db:5432/app
       AUTH_PUBLIC_KEYS: ${AUTH_PUBLIC_KEYS:-}
+      # import_wp reads the WP db (docs/contracts/wp-source.md).
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wp}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wp}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
     volumes:
       # Only the public half of dev_keys; the app never sees the signing key.
       - type: volume
