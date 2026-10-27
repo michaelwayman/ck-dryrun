@@ -76,9 +76,17 @@ def test_first_good_login_rehashes_with_the_default_hasher() -> None:
     assert user.check_password("s3cret")
 
 
-@pytest.mark.skipif(not os.environ.get("WP_DUMP_PATH"), reason="WP_DUMP_PATH (db/dump.sql) not set")
+DUMP_VARS = ("WP_DUMP_PATH", "WP_DUMP_ADMIN_USER", "WP_DUMP_ADMIN_PASSWORD")
+
+
+@pytest.mark.skipif(
+    not all(os.environ.get(var) for var in DUMP_VARS), reason=f"needs {', '.join(DUMP_VARS)}"
+)
 def test_real_dump_admin_hash_checks_admin() -> None:
+    """The dump's admin row checks against a credential given only through the environment."""
+    user = os.environ["WP_DUMP_ADMIN_USER"]
     dump = Path(os.environ["WP_DUMP_PATH"]).read_text()
-    match = re.search(r"INSERT INTO `wp_users` VALUES \(1,'admin','(\$wp\$[^']+)'", dump)
+    row = rf"INSERT INTO `wp_users` VALUES \(\d+,'{re.escape(user)}','(\$wp\$[^']+)'"  # noqa: S608 (a regex, not SQL)
+    match = re.search(row, dump)
     assert match, "admin row not found in the dump"
-    assert check_password("admin", "wp_bcrypt$" + match.group(1))
+    assert check_password(os.environ["WP_DUMP_ADMIN_PASSWORD"], "wp_bcrypt$" + match.group(1))
