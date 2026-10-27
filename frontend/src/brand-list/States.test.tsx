@@ -102,23 +102,13 @@ describe("<BrandList /> states", () => {
       "/api/brands/?industry=retail&ordering=name&page=9&page_size=12",
       "list-page-out-of-range.json",
     );
-    respond(
-      "/api/brands/?industry=retail&ordering=name&page_size=12",
-      "list-empty.json",
-    );
     visit("?industry=retail&ordering=name&page=9");
-    const user = userEvent.setup();
     render(<BrandList config={CONFIG} />);
 
     const link = await screen.findByRole("link", { name: "Go to page 1" });
     expect(link.getAttribute("href")).toBe(
       "/brand/?industry=retail&ordering=name",
     );
-    await user.click(link);
-    expect(window.location.search).toBe("?industry=retail&ordering=name");
-    expect(
-      await screen.findByText("No brands match these filters."),
-    ).toBeTruthy();
   });
 
   it("error: a 200 that isn't a brand page", async () => {

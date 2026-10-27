@@ -1,5 +1,4 @@
 // The loading, empty and error states, and the live region that announces each result.
-import type { MouseEvent } from "react";
 import type { BrandsApiError } from "./types";
 
 const SKELETON_CARDS = 3;
@@ -38,19 +37,15 @@ export function Empty({ onClear }: { onClear?: () => void }) {
   );
 }
 
-function opensElsewhere(e: MouseEvent) {
-  return e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
-}
-
 export function ErrorState({
   error,
   onRetry,
-  firstPage,
+  firstPageHref,
 }: {
   error: BrandsApiError;
   onRetry: () => void;
   // Page 1 of the same view, offered for a page past the end (brands-api: 404 `not_found`).
-  firstPage?: { href: string; onClick: () => void };
+  firstPageHref?: string;
 }) {
   const message =
     error.code === "not_found"
@@ -64,16 +59,8 @@ export function ErrorState({
       <button type="button" className="brand-list__button" onClick={onRetry}>
         Retry
       </button>
-      {firstPage && error.code === "not_found" && (
-        <a
-          className="brand-list__button"
-          href={firstPage.href}
-          onClick={(e) => {
-            if (opensElsewhere(e)) return;
-            e.preventDefault();
-            firstPage.onClick();
-          }}
-        >
+      {firstPageHref && error.code === "not_found" && (
+        <a className="brand-list__button" href={firstPageHref}>
           Go to page 1
         </a>
       )}

@@ -61,12 +61,9 @@ export function BrandList({ config }: { config: MountConfig }) {
           <ErrorState
             error={result.error}
             onRetry={() => reload(result.retry)}
-            firstPage={
+            firstPageHref={
               state.page > 1
-                ? {
-                    href: hrefFor({ ...state, page: 1 }, config),
-                    onClick: () => goToPage(1),
-                  }
+                ? hrefFor({ ...state, page: 1 }, config)
                 : undefined
             }
           />
