@@ -152,6 +152,12 @@ services:
       DATABASE_URL: postgres://auth:${AUTH_DB_PASSWORD:-auth}@auth-db:5432/auth
       AUTH_SIGNING_KEY: ${AUTH_SIGNING_KEY:-/keys/signing.pem}
       AUTH_SIGNING_KID: ${AUTH_SIGNING_KID:-}
+      # import_wp_users reads the WP users from db (wp-source contract).
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wp}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wp}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX:-wp_}
     volumes:
       - dev_keys:/keys:ro
     # The kid comes from the generated key unless .env sets one.
