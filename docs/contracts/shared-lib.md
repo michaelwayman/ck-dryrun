@@ -34,7 +34,7 @@ It does not contain users, login, refresh, signing keys, token minting, or the W
 ## DRF layer (`tokenauth.drf`; needs the `drf` extra)
 | Name | Kind | Behaviour |
 |---|---|---|
-| `BearerTokenAuthentication` | DRF `BaseAuthentication` | Reads `Authorization: Bearer <token>`.<br>No header: returns `None` (anonymous).<br>Malformed header or a `TokenError`: raises `AuthenticationFailed` with code `invalid_token`.<br>Success: returns `(TokenUser, Claims)`.<br>`authenticate_header` returns `Bearer`, so DRF sends 401 rather than 403. |
+| `BearerTokenAuthentication` | DRF `BaseAuthentication` | Reads `Authorization: Bearer <token>` (scheme matched case-insensitively).<br>No header, or a scheme other than `Bearer`: returns `None` (anonymous; DRF answers `not_authenticated`).<br>Malformed `Bearer` header or a `TokenError`: raises `AuthenticationFailed` with code `invalid_token`.<br>Success: returns `(TokenUser, Claims)`.<br>`authenticate_header` returns `Bearer error="invalid_token"` after an `invalid_token` failure on that request, otherwise `Bearer` (RFC 6750 §3.1). Either way DRF sends 401 rather than 403, and the header matches brands-api. |
 | `TokenUser` | plain object | `.id` and `.pk` = `sub`, `.username`, `.roles`, `.is_authenticated = True`, `.is_anonymous = False`. Never saved to a database. |
 | `HasRole` | DRF `BasePermission` factory | `HasRole(Role.EDITOR)` returns a permission class. It denies anonymous requests (DRF turns that into 401) and returns `False` when the role is missing (403). |
 
