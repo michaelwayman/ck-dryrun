@@ -53,6 +53,10 @@ COPY --from=builder /opt/venv /opt/venv
 COPY services/app/ /srv/app/
 COPY --from=frontend /out/ /srv/app/static/
 WORKDIR /srv/app
+# Hashed, compressed copies in STATIC_ROOT for whitenoise. Settings need a key and a database URL
+# to load; neither is used here, and neither stays in the image.
+RUN DJANGO_SECRET_KEY=collectstatic-only DATABASE_URL=sqlite:///:memory: \
+    python manage.py collectstatic --noinput
 USER app
 EXPOSE 8000
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--access-logfile", "-"]
