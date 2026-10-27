@@ -1,11 +1,14 @@
 """The auth-api error shape: `{"error": {"code", "message", "fields"}}` for every failure."""
 
+import logging
 from typing import Any
 
 from django.db import OperationalError
 from rest_framework import exceptions, status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidCredentials(exceptions.APIException):
@@ -41,7 +44,11 @@ def exception_handler(exc: Exception, context: dict[str, Any]) -> Response | Non
         body = error_body("invalid_body", "Invalid request body.", fields)
         return Response(body, status=status.HTTP_400_BAD_REQUEST)
     response = drf_exception_handler(exc, context)
-    if response is not None and isinstance(exc, exceptions.APIException):
+    if response is None:  # not an APIException: an unexpected error, whose text must not leak
+        logger.exception("Unhandled error in %s", context.get("view"), exc_info=exc)
+        body = error_body("internal_error", "Internal server error.")
+        return Response(body, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if isinstance(exc, exceptions.APIException):
         code = exc.get_codes()
         response.data = error_body(
             code if isinstance(code, str) else exc.default_code, str(exc.detail)

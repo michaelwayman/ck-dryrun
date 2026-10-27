@@ -5,9 +5,11 @@ import pytest
 from accounts.models import Role, User
 from django.test import Client
 from django.utils import timezone
+from pytest_django.fixtures import Settings
 from tokenauth import verify_token
 
 from tokens.models import RefreshToken
+from tokens.refresh import InvalidRefreshToken, rotate
 from tokens.tests.conftest import contract_example, make_user, verifier_config
 
 pytestmark = pytest.mark.django_db
@@ -65,6 +67,44 @@ def test_replaying_a_rotated_token_revokes_the_whole_family(client: Client, admi
     assert replay.json() == example["response"]["body"]
     for token in (token_b, other_session):
         assert post(client, "/api/token/refresh/", {"refresh": token}).status_code == 401
+    assert not RefreshToken.objects.filter(revoked_at__isnull=True).exists()
+
+
+def test_failed_mint_leaves_the_old_token_live(
+    client: Client, admin: User, settings: Settings, caplog: pytest.LogCaptureFixture
+) -> None:
+    token_a = login(client)["refresh"]
+    key = settings.AUTH_SIGNING_KEY
+    settings.AUTH_SIGNING_KEY = ""
+
+    response = Client(raise_request_exception=False).post(
+        "/api/token/refresh/", {"refresh": token_a}, content_type="application/json"
+    )
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {"code": "internal_error", "message": "Internal server error.", "fields": None}
+    }
+    assert "Traceback" in caplog.text
+    assert RefreshToken.objects.count() == 1
+    assert RefreshToken.objects.get().rotated_at is None
+    settings.AUTH_SIGNING_KEY = key
+    assert post(client, "/api/token/refresh/", {"refresh": token_a}).status_code == 200
+
+
+def test_replay_never_mints_and_still_revokes(client: Client, admin: User) -> None:
+    token_a = login(client)["refresh"]
+    post(client, "/api/token/refresh/", {"refresh": token_a})
+    minted: list[User] = []
+
+    def mint(user: User) -> str:
+        minted.append(user)
+        return "access"
+
+    with pytest.raises(InvalidRefreshToken):
+        rotate(token_a, timezone.now(), mint)
+
+    assert minted == []
     assert not RefreshToken.objects.filter(revoked_at__isnull=True).exists()
 
 

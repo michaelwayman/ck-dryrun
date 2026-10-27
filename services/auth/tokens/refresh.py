@@ -2,6 +2,7 @@
 
 import hashlib
 import secrets
+from collections.abc import Callable
 from datetime import datetime, timedelta
 
 from accounts.models import User
@@ -31,8 +32,11 @@ def issue(user: User, now: datetime) -> str:
     return raw
 
 
-def rotate(raw: str, now: datetime) -> tuple[User, str]:
-    """Spend `raw`; return its user and a new token. Replaying a spent token revokes them all."""
+def rotate(raw: str, now: datetime, mint: Callable[[User], str]) -> tuple[str, str]:
+    """Spend `raw`; return `mint(user)` and a new token. Replaying a spent token revokes them all.
+
+    `mint` runs inside the transaction before `raw` is spent, so if it raises, `raw` stays live.
+    """
     with transaction.atomic():
         token = (
             RefreshToken.objects.select_for_update()
@@ -47,9 +51,10 @@ def rotate(raw: str, now: datetime) -> tuple[User, str]:
                 revoked_at=now
             )
         elif token.revoked_at is None and token.expires_at > now and token.user.is_active:
+            access = mint(token.user)
             token.rotated_at = now
             token.save(update_fields=["rotated_at"])
-            return token.user, issue(token.user, now)
+            return access, issue(token.user, now)
     # Raised outside the transaction so a replay's revocations are committed.
     raise InvalidRefreshToken
 

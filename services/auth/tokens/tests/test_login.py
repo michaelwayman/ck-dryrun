@@ -128,7 +128,9 @@ def test_database_down_is_503(client: Client, monkeypatch: pytest.MonkeyPatch) -
     assert response.json()["error"]["code"] == "unavailable"
 
 
-def test_failed_mint_is_500_and_stores_no_refresh_token(settings: Settings) -> None:
+def test_failed_mint_is_500_and_stores_no_refresh_token(
+    settings: Settings, caplog: pytest.LogCaptureFixture
+) -> None:
     make_user("editor1", "stand-in-pw", "editor")
     settings.AUTH_SIGNING_KEY = ""
 
@@ -139,6 +141,10 @@ def test_failed_mint_is_500_and_stores_no_refresh_token(settings: Settings) -> N
     )
 
     assert response.status_code == 500
+    assert response.json() == {
+        "error": {"code": "internal_error", "message": "Internal server error.", "fields": None}
+    }
+    assert "Traceback" in caplog.text
     assert not RefreshToken.objects.exists()
 
 
