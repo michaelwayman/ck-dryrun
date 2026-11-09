@@ -3,7 +3,7 @@
 # Targets: `runtime` (gunicorn, what compose runs; also runs scripts/dev-keys.sh) and `dev`
 # (whole workspace with the dev tools).
 
-FROM ghcr.io/astral-sh/uv:0.13.5 AS uv
+FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
 FROM python:3.14-slim AS base
 ENV PYTHONUNBUFFERED=1 \

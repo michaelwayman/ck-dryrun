@@ -2,7 +2,7 @@
 # Build context: the repo root, because the uv workspace lock and libs/ live there.
 # Targets: `runtime` (gunicorn, what compose runs) and `dev` (whole workspace with the dev tools).
 
-FROM ghcr.io/astral-sh/uv:0.13.5 AS uv
+FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
 # <BrandList /> bundle and compiled SCSS, gathered in /out in the layout Django static expects.
 FROM node:26-alpine AS frontend
