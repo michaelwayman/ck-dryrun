@@ -17,7 +17,7 @@ dependencies = [
     # Binary wheels for cp314 on linux x86_64 and aarch64 (T3).
     "psycopg[binary]>=3.3,<4",
     # Pure-Python MariaDB driver for import_wp (T6).
-    "pymysql>=1.1,<2",
+    "pymysql>=1.2.4,<2",
     "tokenauth[drf]>=1,<2",
     # Serves /static/ from gunicorn; 6.12 lists Django 5.2 and Python 3.14.
     "whitenoise>=6.12,<7",
