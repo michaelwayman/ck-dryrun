@@ -39,7 +39,7 @@ files = ["config", "accounts", "tokens", "tests"]
 
 # django-environ, PyMySQL, drf-spectacular and jsonschema ship no type hints.
 [[tool.mypy.overrides]]
-module = ["environ", "pymysql", "pymysql.*", "drf_spectacular.*", "jsonschema"]
+module = ["environ", "pymysql", "pymysql>=1.2.4,<2", "drf_spectacular.*", "jsonschema"]
 ignore_missing_imports = true
 
 [tool.django-stubs]

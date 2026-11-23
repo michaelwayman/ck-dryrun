@@ -13,7 +13,7 @@ dependencies = [
     "drf-spectacular>=0.30,<0.31",
     "gunicorn>=26,<27",
     # HTML allow-list sanitizer for stored WP content (T13); abi3 wheels cover cp314, no deps.
-    "nh3>=0.3.7,<0.4",
+    "nh3>=0.3.8,<0.4",
     # Binary wheels for cp314 on linux x86_64 and aarch64 (T3).
     "psycopg[binary]>=3.3,<4",
     # Pure-Python MariaDB driver for import_wp (T6).
